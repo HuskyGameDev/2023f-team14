@@ -8,7 +8,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 5.0f;
     public float jumpForce = 5.0f;
-    public float gravity = -9.8f;
 
     [Header("Ground Settings")]
     public Transform groundCheck;
@@ -17,8 +16,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded;
     private Vector3 velocity;
-    private Rigidbody rb;
     private Vector2 moveInput;
+    private Rigidbody rb;
     private PlayerControls controls;
 
     private void Awake()
@@ -51,26 +50,12 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         CheckGround();
-        ApplyGravity();
         Move();
     }
 
     private void CheckGround()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundLayer);
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -0.5f;
-        }
-    }
-
-    private void ApplyGravity()
-    {
-        if (!isGrounded)
-        {
-            velocity.y += gravity * Time.deltaTime;
-            rb.MovePosition(transform.position + velocity * Time.deltaTime);
-        }
     }
 
     private void Move()
@@ -85,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded)
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
         }
     }
 }

@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-namespace GameMode.FreeForAll
+namespace PumpingAction.GameModes.FreeForAll
 {
     public class gmFreeForAll : GameMode
     {
-        maxTeamSize = 1;
-        minNumTeams = 1;
+        public gmFreeForAll()
+        {
+            maxTeamSize = 1;
+            minNumTeams = 1;
+        }
     }
 }

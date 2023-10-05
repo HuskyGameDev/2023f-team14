@@ -9,23 +9,20 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 5.0f;
     public float jumpForce = 5.0f;
 
-    [Header("Gravity Settings")]
-    public float gravity = 9.81f;
-    public float collisionOffset = 0.5f;
-
     [Header("Ground Settings")]
     public Transform groundCheck;
     public LayerMask groundLayer;
     public float groundDistance = 0.4f;
 
     private bool isGrounded;
-    private Vector3 moveDirection;
+    private Rigidbody rb;
     private Vector2 moveInput;
-    private float yVelocity = 0;
+    private Vector3 moveDirection;
     private PlayerControls controls;
 
     private void Awake()
     {
+        rb = GetComponent<Rigidbody>();
         controls = new PlayerControls();
 
         var mouseLook = transform.GetComponentInChildren<MouseLook>();
@@ -59,10 +56,6 @@ public class PlayerMovement : MonoBehaviour
     private void CheckGround()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundLayer);
-        if (isGrounded && yVelocity < 0)
-        {
-            yVelocity = -1f;
-        }
     }
 
     private void Move()
@@ -71,32 +64,15 @@ public class PlayerMovement : MonoBehaviour
         Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y).normalized;
         moveDirection = transform.TransformDirection(move) * moveSpeed;
 
-        // Handle gravity
-        yVelocity -= gravity * Time.deltaTime;
-
-        // Apply movement
-        Vector3 velocity = moveDirection + Vector3.up * yVelocity;
-
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = 0;
-        }
-
-        // Check for forward collisions before moving
-        if (Physics.Raycast(transform.position, moveDirection, moveSpeed * Time.deltaTime + collisionOffset))
-        {
-            velocity.x = 0;
-            velocity.z = 0;
-        }
-
-        transform.position += velocity * Time.deltaTime;
+        // Set horizontal velocity
+        rb.velocity = new Vector3(moveDirection.x, rb.velocity.y, moveDirection.z);
     }
 
     private void Jump()
     {
         if (isGrounded)
         {
-            yVelocity = Mathf.Sqrt(jumpForce * 2f * gravity);
+            rb.velocity = new Vector3(rb.velocity.x, Mathf.Sqrt(jumpForce * -2f * Physics.gravity.y), rb.velocity.z);
         }
     }
 }

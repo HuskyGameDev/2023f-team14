@@ -24,7 +24,7 @@ public class MouseLook : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Subscribe to events
+        // Subscribe to actions
         controls.std.Look.performed += ctx =>
         {
             Vector2 rawMouseMovement = ctx.ReadValue<Vector2>();

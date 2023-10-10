@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4506451, g: 0.5006123, b: 0.5749602, a: 1}
+  m_IndirectSpecularColor: {r: 0.4506451, g: 0.5006123, b: 0.5749601, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -302,8 +302,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 380307577e56cf3468ab7946e566f4b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xSensitivity: 100
-  ySensitivity: 100
+  xSensitivity: 50
+  ySensitivity: 50
   playerBody: {fileID: 1126748032}
 --- !u!81 &562551641
 AudioListener:
@@ -398,11 +398,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 25
   jumpForce: 7
+  knockbackStrength: 50
+  knockbackDuration: 0.2
   groundCheck: {fileID: 430355032}
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   groundDistance: 0.1
+  playerCamera: {fileID: 562551642}
 --- !u!114 &1126748030
 MonoBehaviour:
   m_ObjectHideFlags: 0

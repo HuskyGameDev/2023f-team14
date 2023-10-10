@@ -9,14 +9,18 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 5.0f;
     public float jumpForce = 5.0f;
-    public float shootForce = 100.0f;
-    public float shootDuration = 0.2f;
+    public float knockbackStrength = 100.0f;
+    public float knockbackDuration = 0.2f;
 
     // Ground checking parameters
     [Header("Ground Settings")]
     public Transform groundCheck; // The point from where we'll check for ground
     public LayerMask groundLayer; // Which layer represents the ground
     public float groundDistance = 0.4f; // Radius of the ground check sphere
+
+    // Other parameters
+    [Header("Other Settings")]
+    public Camera playerCamera;
 
     private bool isGrounded;
     private Rigidbody rb;
@@ -94,9 +98,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!isGrounded)
         {
-            Vector3 moveDirection = transform.forward;
-
-            rb.AddForce(-moveDirection * shootForce, ForceMode.Impulse);
+            Vector3 knockbackDirection = -playerCamera.transform.forward;
+            rb.AddForce(knockbackDirection * knockbackStrength, ForceMode.Impulse);
         }
     }
 }

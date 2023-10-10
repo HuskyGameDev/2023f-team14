@@ -5,7 +5,7 @@ using Unity.Netcode;
 
 public class ConnectionNotificationManager : MonoBehaviour
 {
-    public static ConnectionNotificationManager Singleton { get; internal set; }
+    public static ConnectionNotificationManager Instance { get; internal set; }
 
     public enum ConnectionStatus
     {
@@ -17,20 +17,20 @@ public class ConnectionNotificationManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Singleton != null)
+        if (Instance != null)
         {
             // As long as you aren't creating multiple NetworkManager instances, throw an exception.
             // (***the current position of the callstack will stop here***)
             throw new Exception($"Detected more than one instance of {nameof(ConnectionNotificationManager)}! " +
                 $"Do you have more than one component attached to a {nameof(GameObject)}?");
         }
-        Singleton = this;
+        Instance = this;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        if (Singleton != this)
+        if (Instance != this)
         {
             return;
         }

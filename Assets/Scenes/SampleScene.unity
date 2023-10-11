@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4506451, g: 0.5006123, b: 0.5749601, a: 1}
+  m_IndirectSpecularColor: {r: 0.4506451, g: 0.5006123, b: 0.5749602, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -396,15 +396,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec8f0477a0ab9854dbf2e45f950cf823, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 25
-  jumpForce: 7
-  knockbackStrength: 50
-  knockbackDuration: 0.2
-  groundCheck: {fileID: 430355032}
-  groundLayer:
+  walkingSpeed: 25
+  jumpPower: 7
+  maxForce: 100
+  groundDetectionPoint: {fileID: 430355032}
+  groundLayerMask:
     serializedVersion: 2
     m_Bits: 8
-  groundDistance: 0.1
+  groundCheckRadius: 0.5
+  knockbackForce: 50
   playerCamera: {fileID: 562551642}
 --- !u!114 &1126748030
 MonoBehaviour:

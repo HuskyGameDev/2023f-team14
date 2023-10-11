@@ -7,99 +7,102 @@ public class PlayerMovement : MonoBehaviour
 {
     // Movement parameters
     [Header("Movement Settings")]
-    public float moveSpeed = 5.0f;
-    public float jumpForce = 5.0f;
-    public float knockbackStrength = 100.0f;
-    public float knockbackDuration = 0.2f;
+    public float walkingSpeed = 25.0f;
+    public float jumpPower = 7.0f;
+    public float maxForce = 100;
 
-    // Ground checking parameters
-    [Header("Ground Settings")]
-    public Transform groundCheck; // The point from where we'll check for ground
-    public LayerMask groundLayer; // Which layer represents the ground
-    public float groundDistance = 0.4f; // Radius of the ground check sphere
+    // Ground detection parameters
+    [Header("Ground Detection Settings")]
+    public Transform groundDetectionPoint; // The point from where we'll check for ground
+    public LayerMask groundLayerMask;      // Which layer represents the ground
+    public float groundCheckRadius = 0.4f; // Radius of the ground check sphere
 
     // Other parameters
-    [Header("Other Settings")]
+    [Header("Miscellaneous Settings")]
+    public float knockbackForce = 50.0f;
     public Camera playerCamera;
 
     private bool isGrounded;
     private Rigidbody rb;
-    private Vector2 moveInput;
-    private Vector3 moveDirection;
-    private PlayerControls controls;
+    private Vector2 movementInputVector;
+    private PlayerControls playerControls;
 
     private void Awake()
     {
         // Initializing components
         rb = GetComponent<Rigidbody>();
-        controls = new PlayerControls();
+        playerControls = new PlayerControls();
 
         // Try to get the MouseLook script from child components and initialize it
-        var mouseLook = transform.GetComponentInChildren<MouseLook>();
-        if (mouseLook)
-        {
-            mouseLook.Initialize(controls);
-        }
+        var mouseLookComponent = transform.GetComponentInChildren<MouseLook>();
+        if (mouseLookComponent){ mouseLookComponent.Initialize(playerControls); }
 
-        // Subscribe to inputs
-        controls.std.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>(); // Lateral movement
-        controls.std.Move.canceled += ctx => moveInput = Vector2.zero;
-        controls.std.Jump.performed += ctx => Jump(); // Jumping
-        controls.std.Shoot.performed += ctx => Shoot();
+        // Subscribe to input actions
+        playerControls.std.Move.performed += ctx => movementInputVector = ctx.ReadValue<Vector2>();
+        playerControls.std.Move.canceled += ctx => movementInputVector = Vector2.zero;
+        playerControls.std.Jump.performed += ctx => Jump();
+        playerControls.std.Shoot.performed += ctx => KnockbackShot();
     }
 
     private void OnEnable()
     {
-        controls.Enable();
+        playerControls.Enable();
     }
 
     private void OnDisable()
     {
-        controls.Disable();
+        playerControls.Disable();
     }
 
     private void Update()
     {
-        CheckGround();
+        DetectGroundStatus();
     }
 
     private void FixedUpdate()
     {
-        // Handle player movement in fixed intervals for physics consistency
-        Move();
+        HandleMovement();
     }
 
-    private void CheckGround()
+    private void DetectGroundStatus()
     {
-        // Perform a sphere check to see if player is touching ground
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundLayer);
+        // Check if player is touching ground using a sphere detection
+        isGrounded = Physics.CheckSphere(groundDetectionPoint.position, groundCheckRadius, groundLayerMask);
     }
 
-    private void Move()
+    private void HandleMovement()
     {
-        // Calculate player's horizontal movement based on input
-        Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y).normalized;
-        moveDirection = transform.TransformDirection(move) * moveSpeed;
+        // Calculate horizontal movement vector based on user input
+        Vector3 rawMovementVector = new Vector3(movementInputVector.x, 0f, movementInputVector.y).normalized;
 
-        // Set the velocity of the player
-        rb.velocity = new Vector3(moveDirection.x, rb.velocity.y, moveDirection.z);
+        Vector3 currentVelocity = rb.velocity;
+        Vector3 targetVelocity = transform.TransformDirection(rawMovementVector) * walkingSpeed;
+
+        Vector3 velocityChange = targetVelocity - currentVelocity;
+        velocityChange = new Vector3(velocityChange.x, 0, velocityChange.z);
+
+        velocityChange = Vector3.ClampMagnitude(velocityChange, maxForce);
+
+        // Update player's velocity based on movement direction
+        rb.AddForce(velocityChange, ForceMode.VelocityChange);
     }
 
     private void Jump()
     {
-        // Allow the player to jump if they are on the ground
+        // Execute jump if the player is grounded
         if (isGrounded)
         {
-            rb.velocity = new Vector3(rb.velocity.x, Mathf.Sqrt(jumpForce * -2f * Physics.gravity.y), rb.velocity.z);
+            Vector3 jumpVelocity = new Vector3(rb.velocity.x, Mathf.Sqrt(jumpPower * -2f * Physics.gravity.y), rb.velocity.z);
+            rb.AddForce(jumpVelocity, ForceMode.Impulse);
         }
     }
 
-    private void Shoot()
+    private void KnockbackShot()
     {
-        if (!isGrounded)
+        /*if (!isGrounded)
         {
-            Vector3 knockbackDirection = -playerCamera.transform.forward;
-            rb.AddForce(knockbackDirection * knockbackStrength, ForceMode.Impulse);
-        }
+            Vector3 recoilDirection = -playerCamera.transform.forward;
+            rb.AddForce(recoilDirection * knockbackForce, ForceMode.Impulse);
+        }*/
     }
 }

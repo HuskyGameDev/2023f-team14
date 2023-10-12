@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,8 +8,10 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float movementSpeed;
-    public float jumpStrength;
-    public float groundDrag;
+    public float jumpForce;
+    public float jumpCooldown;
+    public float airMultiplier; // Increases movespeed in air
+    public float groundDrag; // Slows character when grounded
 
     [Header("Ground Check Settings")]
     public Transform groundSphere;
@@ -20,7 +23,8 @@ public class PlayerMovement : MonoBehaviour
     public MouseLook mouseLook;
 
     private bool isGrounded;
-    private float speedCoefficient = 10;
+    private bool readyToJump;
+    private float speedCoefficient = 10; // Makes character movement more snappy
     private Transform playerOrientation;
     private Rigidbody rigidbody;
     private Vector2 lateralMovementInput;
@@ -98,12 +102,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void SpeedControl()
     {
+        // Retireves current velocity
         Vector3 flatVelocity = new Vector3(rigidbody.velocity.x, 0f, rigidbody.velocity.z);
+
+        // Produces coefficient for movementspeed if airborn
+        float speedMultiplier = 1;
+        if (!isGrounded)
+        {
+            speedMultiplier = airMultiplier;
+        }
 
         // Limit velocity
         if (flatVelocity.magnitude > movementSpeed)
         {
-            Vector3 limitedVelocity = flatVelocity.normalized * movementSpeed;
+            Vector3 limitedVelocity = flatVelocity.normalized * movementSpeed * speedMultiplier;
             rigidbody.velocity = new Vector3(limitedVelocity.x, rigidbody.velocity.y, limitedVelocity.z);
         }
     }
@@ -113,14 +125,28 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movementDirection = new Vector3(lateralMovementInput.x, 0f, lateralMovementInput.y).normalized;
         Vector3 calculatedMoveVector = playerOrientation.TransformDirection(movementDirection) * movementSpeed * speedCoefficient;
 
+
         rigidbody.AddForce(calculatedMoveVector, ForceMode.Force);
     }
 
     private void Jump()
     {
-        if (isGrounded)
+        if (isGrounded && readyToJump)
         {
-            rigidbody.velocity = new Vector3(rigidbody.velocity.x, Mathf.Sqrt(jumpStrength * -2f * Physics.gravity.y), rigidbody.velocity.z);
+            // Zero out y velocity for consistent jumps
+            rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0f, rigidbody.velocity.z);
+
+            // Add force on y-axis
+            rigidbody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+
+            readyToJump = false;
         }
+
+        Invoke(nameof(ResetJump), jumpCooldown);
+    }
+
+    private void ResetJump()
+    {
+        readyToJump = true;
     }
 }

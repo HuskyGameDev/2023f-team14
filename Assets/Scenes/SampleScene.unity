@@ -187,10 +187,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: -2309806489861633886, guid: 316056094a5a8b84f9e6cb77a5b8a187, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 4c90b9035ce98a2449d28f3b46e97e92, type: 2}
+    - target: {fileID: -1923423280837089057, guid: 316056094a5a8b84f9e6cb77a5b8a187, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 4c90b9035ce98a2449d28f3b46e97e92, type: 2}
     - target: {fileID: -674449036139524865, guid: 316056094a5a8b84f9e6cb77a5b8a187, type: 3}
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 406536149234231099, guid: 316056094a5a8b84f9e6cb77a5b8a187, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 4c90b9035ce98a2449d28f3b46e97e92, type: 2}
     - target: {fileID: 919132149155446097, guid: 316056094a5a8b84f9e6cb77a5b8a187, type: 3}
       propertyPath: m_Name
       value: Testing
@@ -199,6 +211,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1065333464885941482, guid: 316056094a5a8b84f9e6cb77a5b8a187, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 4c90b9035ce98a2449d28f3b46e97e92, type: 2}
     - target: {fileID: 1421306393901810911, guid: 316056094a5a8b84f9e6cb77a5b8a187, type: 3}
       propertyPath: m_Layer
       value: 3
@@ -474,7 +490,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 25
-  jumpStrength: 8
+  jumpForce: 18
+  jumpCooldown: 0.25
+  airMultiplier: 1.25
   groundDrag: 3
   groundSphere: {fileID: 430355032}
   groundLayer:

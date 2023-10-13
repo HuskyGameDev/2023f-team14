@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.UI;
 
 public class ScoreKeeper : MonoBehaviour
 {
     public static ScoreKeeper Instance;
     [SerializeField]
-    public GameMode gameMode { get; private set; }
+    public GameMode gameMode;
+    [SerializeField]
+    private Button startButton;
     void Awake()
     {
         if (Instance != null)
@@ -17,6 +20,11 @@ public class ScoreKeeper : MonoBehaviour
                 $"Do you have more than one component attached to a {nameof(GameObject)}?");
         }
         Instance = this;
+
+        startButton.onClick.AddListener(() =>
+        {
+            InitializeScene();
+        });
     }
 
     void Start()
@@ -29,6 +37,10 @@ public class ScoreKeeper : MonoBehaviour
 
     }
 
-
+    public void InitializeScene()
+    {
+        Debug.Log("Initializing");
+        gameMode.Initialize();
+    }
     // override OnDestroy if needed
 }

@@ -10,6 +10,9 @@ public class GameMode : ScriptableObject
     private const int DefaultPlayerHealth = 100;
     private const int DefaultRespawnTimeMilliseconds = 5000;
 
+    [SerializeField]
+    private string gm_name;
+    public string GameModeName => gm_name;
     [Header("Player Data")]
     [SerializeField]
     private int respawnTimeMilliseconds = DefaultRespawnTimeMilliseconds;
@@ -34,8 +37,15 @@ public class GameMode : ScriptableObject
 
     [Header("Objective Data")]
     [SerializeField]
-    private GameObject[] prefabs;
+    private NetworkObject[] prefabs;
 
-
+    public void Initialize()
+    {
+        foreach (NetworkObject prefab in prefabs)
+        {
+            NetworkObject o = Instantiate(prefab);
+            o.Spawn();
+        }
+    }
 }
 

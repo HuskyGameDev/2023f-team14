@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03fa6d5a18e24da63b05cf903b3c5142, type: 3}
-  m_Name: FreeForAll
+  m_Name: CTF
   m_EditorClassIdentifier: 
-  gm_name: Free-For-All
-  respawnTimeMilliseconds: 0
+  gm_name: Capture The Flag
+  respawnTimeMilliseconds: 5000
   playerHealth: 100
-  maxTeamSize: 1
+  maxTeamSize: 0
   minNumTeams: 2
   prefabs:
-  - {fileID: 0}
+  - {fileID: 7262145652196526388, guid: 2d7d72a585b0d184d9c7d306d7a81e98, type: 3}

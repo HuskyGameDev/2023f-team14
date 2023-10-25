@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public float movementSpeed;
     public float jumpForce;
     public float jumpCooldown;
-    public float airMultiplier; // Increases movespeed in air
+    public float airMultiplier; // Increases move speed in air
     public float groundDrag; // Slows character when grounded
 
     [Header("Ground Check Settings")]
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     private bool readyToJump;
     private float speedCoefficient = 10; // Makes character movement more snappy
     private Transform playerOrientation;
-    private Rigidbody rigidbody;
+    private Rigidbody rb;
     private Vector2 lateralMovementInput;
 
     private PlayerControls playerControls;
@@ -35,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
     {
         InitializeComponents();
         InitializeMouseLook();
+        Debug.Log("Moving to sub");
         SubscribeToInputEvents();
     }
 
@@ -62,9 +63,17 @@ public class PlayerMovement : MonoBehaviour
 
     private void InitializeComponents()
     {
-        rigidbody = GetComponent<Rigidbody>();
-        rigidbody.freezeRotation = true;
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
         playerControls = new PlayerControls();
+
+        //DEBUGGING
+        foreach (InputBinding ib in playerControls.bindings)
+        {
+            Debug.Log(ib.action + " " + ib.name);
+        }
+        //END DEBUGGING
+
         playerOrientation = transform.Find("Orientation");
     }
 
@@ -78,7 +87,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void SubscribeToInputEvents()
     {
+        Debug.Log("Subbing...");
         playerControls.std.Move.performed += ctx => lateralMovementInput = ctx.ReadValue<Vector2>();
+        playerControls.std.Move.performed += ctx => Debug.Log("Move!");
         playerControls.std.Move.canceled += ctx => lateralMovementInput = Vector2.zero;
         playerControls.std.Jump.performed += ctx => Jump();
     }
@@ -92,20 +103,20 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded)
         {
-            rigidbody.drag = groundDrag;
+            rb.drag = groundDrag;
         }
         else
         {
-            rigidbody.drag = 0;
+            rb.drag = 0;
         }
     }
 
     private void SpeedControl()
     {
-        // Retireves current velocity
-        Vector3 flatVelocity = new Vector3(rigidbody.velocity.x, 0f, rigidbody.velocity.z);
+        // Retrieves current velocity
+        Vector3 flatVelocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        // Produces coefficient for movementspeed if airborn
+        // Produces coefficient for movement speed if airborne
         float speedMultiplier = 1;
         if (!isGrounded)
         {
@@ -116,17 +127,17 @@ public class PlayerMovement : MonoBehaviour
         if (flatVelocity.magnitude > movementSpeed)
         {
             Vector3 limitedVelocity = flatVelocity.normalized * movementSpeed * speedMultiplier;
-            rigidbody.velocity = new Vector3(limitedVelocity.x, rigidbody.velocity.y, limitedVelocity.z);
+            rb.velocity = new Vector3(limitedVelocity.x, rb.velocity.y, limitedVelocity.z);
         }
     }
 
     private void HandleMovement()
     {
         Vector3 movementDirection = new Vector3(lateralMovementInput.x, 0f, lateralMovementInput.y).normalized;
-        Vector3 calculatedMoveVector = playerOrientation.TransformDirection(movementDirection) * movementSpeed * speedCoefficient;
+        Vector3 calculatedMoveVector = movementSpeed * speedCoefficient * playerOrientation.TransformDirection(movementDirection);
 
 
-        rigidbody.AddForce(calculatedMoveVector, ForceMode.Force);
+        rb.AddForce(calculatedMoveVector, ForceMode.Force);
     }
 
     private void Jump()
@@ -134,10 +145,10 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded && readyToJump)
         {
             // Zero out y velocity for consistent jumps
-            rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0f, rigidbody.velocity.z);
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
             // Add force on y-axis
-            rigidbody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
 
             readyToJump = false;
         }

@@ -56,5 +56,9 @@
     "activityBar.background": "#362D11",
     "titleBar.activeBackground": "#4C3E18",
     "titleBar.activeForeground": "#FCFBF7"
-  }
+  },
+  "cSpell.words": [
+    "Retireves",
+    "Rigidbody"
+  ]
 }

@@ -29,12 +29,10 @@ public class ScoreKeeper : MonoBehaviour
 
     void Start()
     {
-
     }
 
     void Update()
     {
-
     }
 
     public void InitializeScene()

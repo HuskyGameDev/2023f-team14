@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
-public class MouseLook : MonoBehaviour
+public class MouseLook : Unity.Netcode.NetworkBehaviour
 {
     public float xSensitivity = 100f;
     public float ySensitivity = 100f;
@@ -21,25 +22,31 @@ public class MouseLook : MonoBehaviour
         playerControls = controlsInstance;
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
+        //Debug.Log("Camera spawned. " + (IsOwner ? "It's " : "Not ") + "mine!");
+        gameObject.SetActive(IsOwner);
+        if (!IsOwner) return;
+
         if (playerControls == null)
         {
             Debug.LogError("Controls instance is null in MouseLook script.");
             return;
         }
-
         // Hides cursor
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        LockCursor(true);
 
         // Subscribe to actions
         playerControls.std.Look.performed += ctx => Look(ctx.ReadValue<Vector2>());
         playerControls.std.Look.canceled += ctx => mouseMovement = Vector2.zero;
+        playerControls.std.Escape.started += ctx => LockCursor(Cursor.visible);
+
     }
 
     private void Look(Vector2 rawMouseMovement)
     {
+        if (Cursor.visible) return;
+
         mouseMovement = new Vector2(rawMouseMovement.x * xSensitivity * Time.deltaTime, rawMouseMovement.y * ySensitivity * Time.deltaTime);
 
         // Retrieve rotation
@@ -52,5 +59,11 @@ public class MouseLook : MonoBehaviour
         // Rotate player's model to match camera
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
         orientation.rotation = Quaternion.Euler(0f, yRotation, 0f);
+    }
+
+    private void LockCursor(bool lok = true)
+    {
+        Cursor.lockState = lok ? CursorLockMode.Locked : CursorLockMode.None;
+        Cursor.visible = !lok;
     }
 }

@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : Unity.Netcode.NetworkBehaviour
 {
     [Header("Movement Settings")]
     public float movementSpeed;
@@ -30,13 +30,18 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 lateralMovementInput;
 
     private PlayerControls playerControls;
-
     private void Awake()
     {
         InitializeComponents();
         InitializeMouseLook();
-        Debug.Log("Moving to sub");
+    }
+
+    public override void OnNetworkSpawn()
+    {
         SubscribeToInputEvents();
+        transform.position = new Vector3(0, 15, 0);
+
+        base.OnNetworkSpawn();
     }
 
     private void OnEnable()
@@ -66,15 +71,8 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         playerControls = new PlayerControls();
-
-        //DEBUGGING
-        foreach (InputBinding ib in playerControls.bindings)
-        {
-            Debug.Log(ib.action + " " + ib.name);
-        }
-        //END DEBUGGING
-
         playerOrientation = transform.Find("Orientation");
+        playerCamera = transform.GetComponentInChildren<Camera>();
     }
 
     private void InitializeMouseLook()
@@ -82,14 +80,14 @@ public class PlayerMovement : MonoBehaviour
         if (mouseLook)
         {
             mouseLook.Initialize(playerControls);
+            return;
         }
+        Debug.LogError("No camera bound to player!");
     }
 
     private void SubscribeToInputEvents()
     {
-        Debug.Log("Subbing...");
         playerControls.std.Move.performed += ctx => lateralMovementInput = ctx.ReadValue<Vector2>();
-        playerControls.std.Move.performed += ctx => Debug.Log("Move!");
         playerControls.std.Move.canceled += ctx => lateralMovementInput = Vector2.zero;
         playerControls.std.Jump.performed += ctx => Jump();
     }
@@ -133,9 +131,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleMovement()
     {
+        if (!IsOwner)
+        {
+            return;
+        }
         Vector3 movementDirection = new Vector3(lateralMovementInput.x, 0f, lateralMovementInput.y).normalized;
         Vector3 calculatedMoveVector = movementSpeed * speedCoefficient * playerOrientation.TransformDirection(movementDirection);
-
 
         rb.AddForce(calculatedMoveVector, ForceMode.Force);
     }

@@ -58,7 +58,11 @@
     "titleBar.activeForeground": "#FCFBF7"
   },
   "cSpell.words": [
+    "Hitscan",
+    "qsize",
+    "Raycast",
     "Retireves",
-    "Rigidbody"
+    "Rigidbody",
+    "underbarrel"
   ]
 }

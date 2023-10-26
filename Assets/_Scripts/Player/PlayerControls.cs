@@ -219,6 +219,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""bfd1ba0d-ebcf-4bf4-ba89-78254735dd66"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""277082d0-ab70-45f2-b885-2c7c0330a9b9"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",

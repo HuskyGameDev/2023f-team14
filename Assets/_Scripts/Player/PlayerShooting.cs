@@ -21,8 +21,7 @@ public class PlayerShooting : Unity.Netcode.NetworkBehaviour
 
     public void OnShoot()
     {
-        if (!IsOwner || !IsClient || !IsHost) return;
-
+        if (!IsOwner) return;
         shotgun.FireServerRpc();
     }
 

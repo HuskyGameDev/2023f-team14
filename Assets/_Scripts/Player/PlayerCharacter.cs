@@ -10,6 +10,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public NetworkVariable<int> score;
     public NetworkVariable<uint> team;
     public float maxHealth;
+    public Camera camera;
 
     private void Awake()
     {
@@ -18,6 +19,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
             if (newv < 0) { DieServerRpc(); return; }
             if (newv > maxHealth) { health.Value = maxHealth; }
         };
+        camera = GetComponentInChildren<Camera>();
     }
 
     public override void OnNetworkSpawn()

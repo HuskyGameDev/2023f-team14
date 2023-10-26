@@ -17,6 +17,9 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     [Header("Miscellaneous")]
     [SerializeField]
     private LayerMask playerMask;
+    [SerializeField]
+    private Transform modelBarrelEnd;
+    private Ray[] gizmos;
 
     //TODO Finish implementing vv
     //run calcs using ammo and  other attachments
@@ -36,14 +39,21 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     }
 
 
+    //TODO Spawn projectiles + hitscan from gun barrel.
     [ServerRpc]
     public void FireServerRpc(ServerRpcParams serverRpcParams = default)
     {
         var client = NetworkManager.ConnectedClients[OwnerClientId].PlayerObject.GetComponent<PlayerCharacter>();
-        Camera clientCam = client.GetComponentInChildren<Camera>();
+        Camera clientCam = client.camera;
         Vector2[] spread = barrel.GetScreenPointSpread(ammoType.numPellets);
-        Ray r;
-        RaycastHit hit;
+
+        gizmos = new Ray[spread.Length];
+        for (int i = 0; i < spread.Length; i++)
+        {
+            gizmos[i] = clientCam.ScreenPointToRay(new Vector2(spread[i].x + (clientCam.pixelWidth / 2), spread[i].y + (clientCam.pixelHeight / 2)));
+        }
+
+
         PlayerCharacter pc;
         switch (ammoType.fireMode)
         {
@@ -54,8 +64,7 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
             case FireMode.Projectile:
                 for (int i = 0; i < spread.Length; i++)
                 {
-                    r = clientCam.ScreenPointToRay(spread[i]);
-                    NetworkObject pellet = Instantiate<NetworkObject>(ammoType.pelletPrefab, r.origin, Quaternion.Euler(r.direction));
+                    NetworkObject pellet = Instantiate<NetworkObject>(ammoType.pelletPrefab, gizmos[i].origin, Quaternion.Euler(gizmos[i].direction));
                     pellet.SpawnWithOwnership(OwnerClientId);
                 }
                 break;
@@ -68,23 +77,30 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
             case FireMode.Hitscan:
                 for (int i = 0; i < spread.Length; i++)
                 {
-                    Gizmos.color = Color.red;
-                    r = clientCam.ScreenPointToRay(spread[i]);
-                    Gizmos.DrawRay(r);
 
                     //Actually do a raycast.
-                    if (Physics.Raycast(r, out hit))
+                    if (Physics.Raycast(gizmos[i], out RaycastHit hit, playerMask))
                     {
                         pc = hit.transform.gameObject.GetComponent<PlayerCharacter>();
 
                         //Hit!
-                        if (pc.team.Value != pc.team.Value)
+                        if (pc.team.Value != client.team.Value)
                             pc.Hit(OwnerClientId, Damage);
                     }
                 }
                 break;
             default:
                 break;
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (gizmos == null) return;
+        Gizmos.color = Color.red;
+        for (int i = 0; i < gizmos.Length; i++)
+        {
+            Gizmos.DrawLine(gizmos[i].origin, gizmos[i].direction * 100);
         }
     }
 }

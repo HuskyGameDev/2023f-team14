@@ -66,4 +66,15 @@ public class MouseLook : Unity.Netcode.NetworkBehaviour
         Cursor.lockState = lok ? CursorLockMode.Locked : CursorLockMode.None;
         Cursor.visible = !lok;
     }
+
+    private void OnDrawGizmos()
+    {
+        if (!IsServer) return;
+        Gizmos.color = Color.blue;
+        Gizmos.DrawRay(transform.position, transform.forward * 100);
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, transform.right * 100);
+        Gizmos.color = Color.green;
+        Gizmos.DrawRay(transform.position, transform.up * 100);
+    }
 }

@@ -10,19 +10,18 @@ public class PlayerShooting : Unity.Netcode.NetworkBehaviour
     private PlayerCharacter pc;
     private void Awake()
     {
-        myCam = GetComponentInChildren<Camera>();
         pc = GetComponent<PlayerCharacter>();
+        myCam = pc.camera;
     }
     // Start is called before the first frame update
     void Start()
     {
-
     }
 
     public void OnShoot()
     {
         if (!IsOwner) return;
-        shotgun.FireServerRpc();
+        shotgun.FireServerRpc(myCam.transform.position, myCam.transform.forward, myCam.transform.right, myCam.transform.up);
     }
 
     // Update is called once per frame

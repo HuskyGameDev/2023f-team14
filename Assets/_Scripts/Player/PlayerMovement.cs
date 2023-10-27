@@ -71,7 +71,7 @@ public class PlayerMovement : Unity.Netcode.NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         playerControls = new PlayerControls();
-        playerOrientation = transform.Find("Orientation");
+        playerOrientation = transform.Find("PlayerModel");
         playerCamera = transform.GetComponentInChildren<Camera>();
     }
 

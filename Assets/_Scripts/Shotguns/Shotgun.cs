@@ -19,7 +19,8 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     private LayerMask playerMask;
     [SerializeField]
     private Transform modelBarrelEnd;
-    private Ray[] gizmos;
+    private Ray[] pelletRays;
+    private float MaxHitDistance => 45;
 
     //TODO Finish implementing vv
     //run calcs using ammo and  other attachments
@@ -27,13 +28,13 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
 
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
 
     }
@@ -41,18 +42,25 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
 
     //TODO Spawn projectiles + hitscan from gun barrel.
     [ServerRpc]
-    public void FireServerRpc(ServerRpcParams serverRpcParams = default)
+    public void FireServerRpc(Vector3 pos, Vector3 forward, Vector3 right, Vector3 up, ServerRpcParams serverRpcParams = default)
     {
+        if (serverRpcParams.Receive.SenderClientId != OwnerClientId) return;
+
         var client = NetworkManager.ConnectedClients[OwnerClientId].PlayerObject.GetComponent<PlayerCharacter>();
         Camera clientCam = client.camera;
-        Vector2[] spread = barrel.GetScreenPointSpread(ammoType.numPellets);
+        Vector2[] spread = barrel.GetPelletSpread(ammoType.numPellets);
+        Vector3 pelletDir;
 
-        gizmos = new Ray[spread.Length];
+
+        /* Calculates the rays that the pellet spread creates */
+        pelletRays = new Ray[spread.Length];
         for (int i = 0; i < spread.Length; i++)
         {
-            gizmos[i] = clientCam.ScreenPointToRay(new Vector2(spread[i].x + (clientCam.pixelWidth / 2), spread[i].y + (clientCam.pixelHeight / 2)));
+            pelletDir = Vector3.RotateTowards(forward, right * Mathf.Sign(spread[i].x), Mathf.Abs(spread[i].x), 0f);
+            pelletDir = Vector3.RotateTowards(pelletDir, up * Mathf.Sign(spread[i].y), Mathf.Abs(spread[i].y), 0f);
+            //pelletRays[i] = new Ray(modelBarrelEnd.position, pelletDir);
+            pelletRays[i] = new Ray(pos, pelletDir);
         }
-
 
         PlayerCharacter pc;
         switch (ammoType.fireMode)
@@ -64,7 +72,7 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
             case FireMode.Projectile:
                 for (int i = 0; i < spread.Length; i++)
                 {
-                    NetworkObject pellet = Instantiate<NetworkObject>(ammoType.pelletPrefab, gizmos[i].origin, Quaternion.Euler(gizmos[i].direction));
+                    NetworkObject pellet = Instantiate<NetworkObject>(ammoType.pelletPrefab, pelletRays[i].origin, Quaternion.Euler(pelletRays[i].direction));
                     pellet.SpawnWithOwnership(OwnerClientId);
                 }
                 break;
@@ -79,7 +87,7 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
                 {
 
                     //Actually do a raycast.
-                    if (Physics.Raycast(gizmos[i], out RaycastHit hit, playerMask))
+                    if (Physics.Raycast(pelletRays[i], out RaycastHit hit, playerMask))
                     {
                         pc = hit.transform.gameObject.GetComponent<PlayerCharacter>();
 
@@ -96,11 +104,11 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
 
     private void OnDrawGizmos()
     {
-        if (gizmos == null) return;
+        if (pelletRays == null || !IsServer) return;
         Gizmos.color = Color.red;
-        for (int i = 0; i < gizmos.Length; i++)
+        for (int i = 0; i < pelletRays.Length; i++)
         {
-            Gizmos.DrawLine(gizmos[i].origin, gizmos[i].direction * 100);
+            Gizmos.DrawRay(pelletRays[i].origin, pelletRays[i].direction * MaxHitDistance);
         }
     }
 }

@@ -10,7 +10,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public NetworkVariable<int> score;
     public NetworkVariable<uint> team;
     public float maxHealth;
-    public Camera camera;
+    public new Camera camera;
 
     private void Awake()
     {

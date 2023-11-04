@@ -15,7 +15,9 @@ MonoBehaviour:
   gm_name: Capture The Flag
   respawnTimeMilliseconds: 5000
   playerHealth: 100
+  Algo: 2
   maxTeamSize: 0
   minNumTeams: 2
   prefabs:
+  - {fileID: 7262145652196526388, guid: 2d7d72a585b0d184d9c7d306d7a81e98, type: 3}
   - {fileID: 7262145652196526388, guid: 2d7d72a585b0d184d9c7d306d7a81e98, type: 3}

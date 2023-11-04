@@ -39,6 +39,11 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
 
     }
 
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+    }
+
 
     //TODO Spawn projectiles + hitscan from gun barrel.
     [ServerRpc]

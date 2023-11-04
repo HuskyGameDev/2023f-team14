@@ -8,7 +8,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
 {
     public NetworkVariable<float> health;
     public NetworkVariable<int> score;
-    public NetworkVariable<uint> team;
+    public NetworkVariable<Team> team;
     public float maxHealth;
     public new Camera camera;
 
@@ -37,5 +37,11 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     private void DieServerRpc()
     {
         throw new NotImplementedException();
+    }
+
+    //SERVER ONLY
+    public void Respawn(Vector3 spawnPosition)
+    {
+        if (!IsServer) return;
     }
 }

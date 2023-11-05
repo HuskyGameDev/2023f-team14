@@ -8,7 +8,7 @@ public class ZzzLog : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("Started up logging.");
+        //Debug.Log("Started up logging.");
     }
 
     void OnEnable()

@@ -52,7 +52,7 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
         if (serverRpcParams.Receive.SenderClientId != OwnerClientId) return;
 
         var client = NetworkManager.ConnectedClients[OwnerClientId].PlayerObject.GetComponent<PlayerCharacter>();
-        Camera clientCam = client.camera;
+        Camera clientCam = client.GetComponent<Camera>();
         Vector2[] spread = barrel.GetPelletSpread(ammoType.numPellets);
         Vector3 pelletDir;
 

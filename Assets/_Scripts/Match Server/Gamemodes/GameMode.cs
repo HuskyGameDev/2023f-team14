@@ -41,7 +41,7 @@ public class GameMode : ScriptableObject
     [Header("Objective Data")]
     public List<Objective> prefabs;
 
-
+    private ScoreKeeper sk;
 
     private void Awake()
     {
@@ -51,6 +51,7 @@ public class GameMode : ScriptableObject
     /* */
     public void Initialize()
     {
+        sk = ScoreKeeper.Instance;
         foreach (Objective prefab in prefabs)
         {
             NetworkObject o = Instantiate(prefab.prefab);

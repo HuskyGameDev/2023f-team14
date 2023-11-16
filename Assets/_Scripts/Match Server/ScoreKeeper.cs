@@ -89,7 +89,6 @@ public class ScoreKeeper : NetworkBehaviour
     [ServerRpc]
     public void StartGameServerRpc()
     {
-        if (!IsServer) return;
 
         //TODO: Scene Changes for clients
         Debug.Log("Initializing " + gameMode.Name + " on " + gameMap.Name);
@@ -190,7 +189,8 @@ public class ScoreKeeper : NetworkBehaviour
         var playerId = serverRpcParams.Receive.SenderClientId;
         var pc = NetworkManager.Singleton.ConnectedClients[playerId].PlayerObject.GetComponent<PlayerCharacter>();
         pc.health.Value = pc.maxHealth;
-        pc.transform.position = gameMode.CalculateSpawnPoint(gameMap, pc.team.Value);
+
+        pc.transform.position = GameInProgress.Value ? gameMode.CalculateSpawnPoint(gameMap, pc.team.Value) : gameMode.CalculateSpawnPoint(gameMap, Team.NoTeam);
     }
 
     private void RerackTeams()

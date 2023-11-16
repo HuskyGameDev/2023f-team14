@@ -25,6 +25,7 @@ public class GameMap : ScriptableObject
 
     public void Initialize(GameMode gm, int numTeams)
     {
+        spawnPoints = new SpawnPoint[spawnPointLocations.Length];
         for (int i = 0; i < spawnPointLocations.Length; i++)
         {
             spawnPoints[i] = Instantiate(spawnPointPrefab);

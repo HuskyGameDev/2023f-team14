@@ -161,8 +161,14 @@ public class PlayerMovement : Unity.Netcode.NetworkBehaviour
             labelNumber = 0;
         }
         var req = new MovementStateRequest(labelNumber, new Vector3(lateralMovementInput.x, 0f, lateralMovementInput.y).normalized);
+
+        //Request movement from server
         HandleMovementServerRpc(req);
+
+        //Predict our movement
         Move(req.input);
+
+        //Save our predictions
         predictions.Enqueue((req, new MovementStatePayload(labelNumber, transform.position)));
     }
 

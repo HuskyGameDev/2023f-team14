@@ -520,7 +520,7 @@ MonoBehaviour:
   ammoType: {fileID: 2610502834832426323}
   playerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 63
   modelBarrelEnd: {fileID: 901424476020220118}
 --- !u!1 &5012392985458707617
 GameObject:
@@ -631,7 +631,7 @@ GameObject:
   - component: {fileID: 4967564967256525576}
   m_Layer: 6
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -673,7 +673,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2009809143
+  GlobalObjectIdHash: 951099334
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0

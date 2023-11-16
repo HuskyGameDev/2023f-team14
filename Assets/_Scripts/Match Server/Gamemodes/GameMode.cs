@@ -39,19 +39,23 @@ public class GameMode : ScriptableObject
     /* */
 
     [Header("Objective Data")]
-    public NetworkObject[] prefabs;
+    public List<Objective> prefabs;
 
+
+
+    private void Awake()
+    {
+        prefabs = new();
+    }
 
     /* */
-
-    private Unity.Mathematics.Random random;
     public void Initialize()
     {
-        random = new Unity.Mathematics.Random();
-        foreach (NetworkObject prefab in prefabs)
+        foreach (Objective prefab in prefabs)
         {
-            NetworkObject o = Instantiate(prefab);
+            NetworkObject o = Instantiate(prefab.prefab);
             o.Spawn();
+            o.gameObject.transform.position = prefab.position;
         }
     }
 
@@ -90,7 +94,15 @@ public class GameMode : ScriptableObject
         points.RemoveAll((p) => p.IsEnemyPresent);
 
         //randomly select any point for our team that an enemy isn't in
-        return points[random.NextInt(points.Count)].transform.position;
+        Debug.Log("Seeing " + points.Count + " spawn points");
+        return points[0].transform.position;
+    }
+
+    [Serializable]
+    public struct Objective
+    {
+        public Vector3 position;
+        public NetworkObject prefab;
     }
 }
 

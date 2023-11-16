@@ -15,14 +15,13 @@ public class ScoreKeeper : NetworkBehaviour
     private GameMap gameMap;
     [SerializeField]
     private Button startButton;
-    public bool IsGameInProgress;
 
-    [SerializeField]
-    private List<int> teamCounts;
+    public List<int> teamCounts;
 
-    private Dictionary<ulong, PlayerCharacter> connectedPlayers = new();
-    private HashSet<ulong> readiedPlayers = new HashSet<ulong>();
-    public int numTeams => teamCounts.Count;
+    private readonly Dictionary<ulong, PlayerCharacter> connectedPlayers = new();
+    private readonly HashSet<ulong> readiedPlayers = new();
+    public int NumTeams => teamCounts.Count;
+    public NetworkVariable<bool> GameInProgress = new();
     void Awake()
     {
         if (Instance != null)
@@ -34,10 +33,9 @@ public class ScoreKeeper : NetworkBehaviour
 
         startButton.onClick.AddListener(() =>
         {
-            StartGame(gameMode, gameMap);
+            StartGameServerRpc();
         });
 
-        IsGameInProgress = false;
         teamCounts = new();
     }
 
@@ -53,42 +51,63 @@ public class ScoreKeeper : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (IsServer)
+        {
             ConnectionNotificationManager.Instance.OnClientConnectionNotification += ClientConnectionChange;
-        if (!(IsHost || IsServer)) startButton.enabled = false;
+            NetworkManager.Singleton.OnServerStopped += EndGame;
+            GameInProgress.Value = false;
+        }
+        if (!IsHost) startButton.enabled = false;
         base.OnNetworkSpawn();
     }
 
     public override void OnNetworkDespawn()
     {
         if (IsServer)
+        {
             ConnectionNotificationManager.Instance.OnClientConnectionNotification -= ClientConnectionChange;
+            NetworkManager.Singleton.OnServerStopped -= EndGame;
+            EndGame(true);
+        }
+
+        EndGame(true);
         base.OnNetworkDespawn();
     }
 
-    public void StartGame(GameMode gm, GameMap map)
+    private void EndGame(bool b = true)
+    {
+        gameMap.DespawnSpawnPoints();
+        connectedPlayers.Clear();
+        teamCounts.Clear();
+    }
+
+    public override void OnDestroy()
+    {
+        EndGame(true);
+        base.OnDestroy();
+    }
+
+    [ServerRpc]
+    public void StartGameServerRpc()
     {
         if (!IsServer) return;
 
-        //Scene Changes for clients
-
-        gameMode = gm;
-        gameMap = map;
-        RerackTeams();
-        gameMap.Initialize(gm, numTeams);
-
+        //TODO: Scene Changes for clients
         Debug.Log("Initializing " + gameMode.Name + " on " + gameMap.Name);
+        gameMap.Initialize(gameMode, NumTeams);
         gameMode.Initialize();
+        RerackTeams();
+
+        GameInProgress.Value = true;
     }
     // override OnDestroy if needed
 
     private void ClientConnectionChange(ulong id, ConnectionNotificationManager.ConnectionStatus status)
     {
-        if (!IsGameInProgress) return;
-
+        if (!GameInProgress.Value) return;
         switch (status)
         {
             case ConnectionNotificationManager.ConnectionStatus.Connected:
-                AddPlayer(id, GetTeamCounts());
+                AddPlayer(id);
                 break;
             case ConnectionNotificationManager.ConnectionStatus.Disconnected:
                 RemovePlayer(id);
@@ -97,6 +116,7 @@ public class ScoreKeeper : NetworkBehaviour
                 Debug.LogError("Player " + id + " connection status not found!");
                 break;
         }
+        gameMap.TagPoints(gameMode);
     }
 
     /// <summary>
@@ -105,7 +125,7 @@ public class ScoreKeeper : NetworkBehaviour
     /// <param name="id">The player's unique id</param>
     /// <param name="teamCounts">A list, indexed by team number, containing the number of players on each team</param>
     /// <returns>The team that the player is assigned to.</returns>
-    private Team AddPlayer(ulong id, List<int> teamCounts)
+    private Team AddPlayer(ulong id)
     {
         var pc = NetworkManager.Singleton.ConnectedClients[id].PlayerObject.GetComponent<PlayerCharacter>();
         if (!connectedPlayers.TryAdd(id, pc))
@@ -115,12 +135,14 @@ public class ScoreKeeper : NetworkBehaviour
         }
         var newTeam = gameMode.AssignNewPlayer(teamCounts);
         pc.team.Value = newTeam;
+        teamCounts = GetTeamCounts();
         return newTeam;
     }
 
     private void RemovePlayer(ulong id)
     {
         connectedPlayers.Remove(id);
+        teamCounts = GetTeamCounts();
     }
 
     /// <summary>
@@ -133,16 +155,15 @@ public class ScoreKeeper : NetworkBehaviour
     private List<int> GetTeamCounts()
     {
         List<int> list = new();
-        if (numTeams == 0 || !IsGameInProgress) return list;
-
-        for (int i = 0; i < numTeams; i++)
-        {
-            list.Add(0);
-        }
-
+        int team;
         foreach (var pc in connectedPlayers.Values)
         {
-            list[TeamUtils.GetTeamNumber(pc.team.Value)]++;
+            team = TeamUtils.GetTeamNumber(pc.team.Value);
+
+            for (int i = list.Count; i < team + 1; i++)
+                list.Add(0);
+
+            list[team]++;
         }
         return list;
     }
@@ -168,7 +189,8 @@ public class ScoreKeeper : NetworkBehaviour
     {
         var playerId = serverRpcParams.Receive.SenderClientId;
         var pc = NetworkManager.Singleton.ConnectedClients[playerId].PlayerObject.GetComponent<PlayerCharacter>();
-        pc.Respawn(gameMode.CalculateSpawnPoint(gameMap, pc.team.Value));
+        pc.health.Value = pc.maxHealth;
+        pc.transform.position = gameMode.CalculateSpawnPoint(gameMap, pc.team.Value);
     }
 
     private void RerackTeams()
@@ -179,7 +201,7 @@ public class ScoreKeeper : NetworkBehaviour
         Debug.Log("Reracking teams for " + clients.Count + " players...");
         foreach (KeyValuePair<ulong, NetworkClient> pair in clients)
         {
-            var res = AddPlayer(pair.Key, teamCounts);
+            var res = AddPlayer(pair.Key);
             if (TeamUtils.GetTeamNumber(res) >= teamCounts.Count)
             {
                 teamCounts.Add(1);

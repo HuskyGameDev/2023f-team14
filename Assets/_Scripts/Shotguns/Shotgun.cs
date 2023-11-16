@@ -51,7 +51,7 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     {
         if (serverRpcParams.Receive.SenderClientId != OwnerClientId) return;
 
-        var client = NetworkManager.ConnectedClients[OwnerClientId].PlayerObject.GetComponent<PlayerCharacter>();
+        var client = NetworkManager.ConnectedClients[serverRpcParams.Receive.SenderClientId].PlayerObject.GetComponent<PlayerCharacter>();
         Camera clientCam = client.camera;
         Vector2[] spread = barrel.GetPelletSpread(ammoType.numPellets);
         Vector3 pelletDir;
@@ -63,8 +63,8 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
         {
             pelletDir = Vector3.RotateTowards(forward, right * Mathf.Sign(spread[i].x), Mathf.Abs(spread[i].x), 0f);
             pelletDir = Vector3.RotateTowards(pelletDir, up * Mathf.Sign(spread[i].y), Mathf.Abs(spread[i].y), 0f);
-            //pelletRays[i] = new Ray(modelBarrelEnd.position, pelletDir);
-            pelletRays[i] = new Ray(pos, pelletDir);
+            pelletRays[i] = new Ray(modelBarrelEnd.position, pelletDir);
+            //pelletRays[i] = new Ray(pos, pelletDir);
         }
 
         PlayerCharacter pc;
@@ -88,17 +88,18 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
             /// </summary>
             /// <returns></returns>
             case FireMode.Hitscan:
-                for (int i = 0; i < spread.Length; i++)
+                for (int i = 0; i < pelletRays.Length; i++)
                 {
 
                     //Actually do a raycast.
                     if (Physics.Raycast(pelletRays[i], out RaycastHit hit, playerMask))
                     {
+                        if (!hit.transform.gameObject.CompareTag("Player")) continue;
                         pc = hit.transform.gameObject.GetComponent<PlayerCharacter>();
 
                         //Hit!
-                        if (pc.team.Value != client.team.Value)
-                            pc.Hit(OwnerClientId, Damage);
+                        if (pc.team.Value != client.team.Value || pc.team.Value == Team.NoTeam && client.team.Value == Team.NoTeam)
+                            pc.Hit(serverRpcParams.Receive.SenderClientId, Damage);
                     }
                 }
                 break;

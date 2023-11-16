@@ -1809,8 +1809,9 @@ MonoBehaviour:
   gameMode: {fileID: 11400000, guid: a004879e27c26b546bbe922635465883, type: 2}
   gameMap: {fileID: 11400000, guid: 6147a4cb6f5e3c7428923d02d6115f9d, type: 2}
   startButton: {fileID: 432183501}
-  IsGameInProgress: 0
   teamCounts: 
+  GameInProgress:
+    m_InternalValue: 0
 --- !u!4 &1429167074
 Transform:
   m_ObjectHideFlags: 0

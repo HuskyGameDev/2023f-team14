@@ -377,7 +377,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 316056094a5a8b84f9e6cb77a5b8a187, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 316056094a5a8b84f9e6cb77a5b8a187, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1215,18 +1215,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec8f0477a0ab9854dbf2e45f950cf823, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 25
-  jumpForce: 18
-  jumpCooldown: 0.25
-  airMultiplier: 1.25
-  groundDrag: 3
-  groundSphere: {fileID: 0}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  groundCheckRadius: 0.3
-  playerCamera: {fileID: 0}
-  mouseLook: {fileID: 0}
+  processor: {fileID: 0}
+  inputProvider: {fileID: 0}
+  consistencyChecker: {fileID: 0}
 --- !u!114 &1126748030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1806,7 +1797,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5436d3b1b2fa3ca32bb0cb82ea131631, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameMode: {fileID: 11400000, guid: a004879e27c26b546bbe922635465883, type: 2}
+  gameMode: {fileID: 11400000, guid: ae42c1cbafbfa9940b7803d0897bb79a, type: 2}
   gameMap: {fileID: 11400000, guid: 6147a4cb6f5e3c7428923d02d6115f9d, type: 2}
   startButton: {fileID: 432183501}
   teamCounts: 

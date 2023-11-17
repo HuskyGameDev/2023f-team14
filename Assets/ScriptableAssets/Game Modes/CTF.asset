@@ -19,7 +19,7 @@ MonoBehaviour:
   maxTeamSize: 0
   minNumTeams: 2
   prefabs:
-  - position: {x: -71.7, y: 9.6, z: 51}
+  - position: {x: 47.9, y: -2.1, z: 54.8}
     prefab: {fileID: 7262145652196526388, guid: 2d7d72a585b0d184d9c7d306d7a81e98, type: 3}
-  - position: {x: 37.2, y: 7.95, z: 59.5}
-    prefab: {fileID: 7262145652196526388, guid: 2d7d72a585b0d184d9c7d306d7a81e98, type: 3}
+  - position: {x: -72.4, y: -2.1, z: 54.8}
+    prefab: {fileID: 6825366450793058195, guid: 9939964da03b09f4882628f2fc3785f9, type: 3}

@@ -23,6 +23,7 @@ public class SpawnPoint : MonoBehaviour
         if (!other.tag.Equals("Player")) return;
 
         var pc = other.GetComponent<PlayerCharacter>();
+        pc.OnDeath += Leave;
         numEnemiesPresent += (teamTagMask & (ushort)pc.team.Value) > 0 ? 0 : 1;
     }
 
@@ -31,7 +32,13 @@ public class SpawnPoint : MonoBehaviour
         if (!other.tag.Equals("Player")) return;
 
         var pc = other.GetComponent<PlayerCharacter>();
+        Leave(pc);
+    }
+
+    private void Leave(PlayerCharacter pc)
+    {
         numEnemiesPresent -= (teamTagMask & (ushort)pc.team.Value) > 0 ? 0 : 1;
+        pc.OnDeath -= Leave;
     }
 
     void OnDrawGizmos()

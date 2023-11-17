@@ -2,20 +2,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
 {
+    [DoNotSerialize]
     public NetworkVariable<float> health;
+    [DoNotSerialize]
     public NetworkVariable<int> score;
+    [DoNotSerialize]
     public NetworkVariable<Team> team;
     public float maxHealth;
     public new Camera camera;
+    public PlayerMovement PlayerMovement { get; private set; }
+
+    public Action<PlayerCharacter> OnDeath;
 
     private void Awake()
     {
-
         camera = GetComponentInChildren<Camera>();
+        PlayerMovement = GetComponent<PlayerMovement>();
     }
 
     public override void OnNetworkSpawn()
@@ -36,13 +43,14 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     // SERVER SIDE ONLY
     public void Hit(ulong assailant, float damage)
     {
-        Debug.Log(assailant + " hit me for " + damage + " damage!");
+        Debug.Log(assailant + " hit " + OwnerClientId + " for " + damage + " damage!");
         health.Value -= damage;
     }
 
     [ServerRpc]
     private void DieServerRpc()
     {
+        OnDeath?.Invoke(this);
         //TODO: Implement
     }
 

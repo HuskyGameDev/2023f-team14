@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class ScoreKeeper : NetworkBehaviour
 {
     public static ScoreKeeper Instance;
-    //TODO: update gameMode and gameMap across network
     [SerializeField]
     private GameMode gameMode;
     [SerializeField]
@@ -17,6 +16,7 @@ public class ScoreKeeper : NetworkBehaviour
     private Button startButton;
 
     public List<int> teamCounts;
+
 
     private readonly Dictionary<ulong, PlayerCharacter> connectedPlayers = new();
     private readonly HashSet<ulong> readiedPlayers = new();
@@ -50,6 +50,7 @@ public class ScoreKeeper : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         if (IsServer)
         {
             ConnectionNotificationManager.Instance.OnClientConnectionNotification += ClientConnectionChange;
@@ -57,7 +58,6 @@ public class ScoreKeeper : NetworkBehaviour
             GameInProgress.Value = false;
         }
         if (!IsHost) startButton.enabled = false;
-        base.OnNetworkSpawn();
     }
 
     public override void OnNetworkDespawn()
@@ -190,7 +190,15 @@ public class ScoreKeeper : NetworkBehaviour
         var pc = NetworkManager.Singleton.ConnectedClients[playerId].PlayerObject.GetComponent<PlayerCharacter>();
         pc.health.Value = pc.maxHealth;
 
-        pc.transform.position = GameInProgress.Value ? gameMode.CalculateSpawnPoint(gameMap, pc.team.Value) : gameMode.CalculateSpawnPoint(gameMap, Team.NoTeam);
+        if (!GameInProgress.Value && !gameMap.Initialized)
+        {
+            gameMap.Initialize(gameMode, NumTeams);
+        }
+
+        //!This call is temporary. Remove when PlayerCharacter.DieServerRpc is implemented
+        pc.OnDeath?.Invoke(pc);
+
+        pc.PlayerMovement.SetPosition(gameMode.CalculateSpawnPoint(gameMap, pc.team.Value));
     }
 
     private void RerackTeams()

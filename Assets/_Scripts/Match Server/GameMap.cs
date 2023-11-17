@@ -17,10 +17,10 @@ public class GameMap : ScriptableObject
     private Vector3[] spawnPointLocations;
 
     private SpawnPoint[] spawnPoints;
+    public bool Initialized { get; private set; }
 
     private void Awake()
     {
-        spawnPoints = new SpawnPoint[spawnPointLocations.Length];
     }
 
     public void Initialize(GameMode gm, int numTeams)
@@ -33,6 +33,8 @@ public class GameMap : ScriptableObject
         }
 
         TagPoints(gm, numTeams);
+
+        Initialized = true;
     }
 
     public void DespawnSpawnPoints()

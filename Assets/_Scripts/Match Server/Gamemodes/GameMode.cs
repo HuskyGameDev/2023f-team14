@@ -92,7 +92,7 @@ public class GameMode : ScriptableObject
     public Vector3 CalculateSpawnPoint(GameMap map, Team playerTeam)
     {
         var points = map.GetValidSpawnPoints(playerTeam);
-        points.RemoveAll((p) => p.IsEnemyPresent);
+        points.RemoveAll((p) => points.Count > 1 && p.IsEnemyPresent);
 
         //randomly select any point for our team that an enemy isn't in
         Debug.Log("Seeing " + points.Count + " spawn points");

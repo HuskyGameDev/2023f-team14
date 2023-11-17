@@ -69,7 +69,7 @@ public class ScoreKeeper : NetworkBehaviour
             EndGame(true);
         }
 
-        EndGame(true);
+        //EndGame(true);
         base.OnNetworkDespawn();
     }
 
@@ -82,7 +82,7 @@ public class ScoreKeeper : NetworkBehaviour
 
     public override void OnDestroy()
     {
-        EndGame(true);
+        if (!IsServer) EndGame(true);
         base.OnDestroy();
     }
 

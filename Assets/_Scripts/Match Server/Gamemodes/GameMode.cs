@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using Unity.Mathematics;
 
 [CreateAssetMenu(menuName = "GameMode")]
 public class GameMode : ScriptableObject
@@ -42,15 +43,16 @@ public class GameMode : ScriptableObject
     public List<Objective> prefabs;
 
     private ScoreKeeper sk;
+    private System.Random random = new();
+
+    /* */
 
     private void Awake()
     {
-        prefabs = new();
     }
-
-    /* */
     public void Initialize()
     {
+        prefabs = new();
         sk = ScoreKeeper.Instance;
         foreach (Objective prefab in prefabs)
         {
@@ -96,7 +98,7 @@ public class GameMode : ScriptableObject
 
         //randomly select any point for our team that an enemy isn't in
         Debug.Log("Seeing " + points.Count + " spawn points");
-        return points[0].transform.position;
+        return points[random.Next(points.Count)].transform.position;
     }
 
     [Serializable]

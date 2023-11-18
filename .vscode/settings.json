@@ -58,10 +58,14 @@
     "titleBar.activeForeground": "#FCFBF7"
   },
   "cSpell.words": [
+    "Despawn",
     "Hitscan",
     "Mathf",
     "qsize",
     "Raycast",
+    "Rerack",
+    "Reracking",
+    "Respawning",
     "Retireves",
     "Rigidbody",
     "underbarrel"

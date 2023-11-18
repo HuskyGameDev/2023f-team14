@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public abstract class AmmoType : MonoBehaviour, Attachment
+public abstract class AmmoType : MonoBehaviour, IAttachment
 {
     public int numPellets;
     public FireMode fireMode;

@@ -19,6 +19,8 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     private LayerMask playerMask;
     [SerializeField]
     private Transform modelBarrelEnd;
+
+    private readonly Dictionary<AttachmentID, IAttachment> availableAttachments = new();
     private Ray[] pelletRays;
     private float MaxHitDistance => 45;
 
@@ -45,7 +47,7 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     }
 
 
-    //TODO Spawn projectiles + hitscan from gun barrel.
+    //TODO Render projectiles + hitscan from gun barrel.
     [ServerRpc]
     public void FireServerRpc(Vector3 pos, Vector3 forward, Vector3 right, Vector3 up, ServerRpcParams serverRpcParams = default)
     {
@@ -106,6 +108,41 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
             default:
                 break;
         }
+    }
+
+    [ServerRpc]
+    public void SwapToServerRpc(AttachmentID id)
+    {
+        if (!availableAttachments.TryGetValue(id, out var attachment)) return;
+        if (attachment is Barrel barrel1)
+        {
+            barrel.DetachFrom(this);
+            barrel = barrel1;
+            barrel.AttachTo(this);
+            return;
+        }
+        if (attachment is Underbarrel underbarrel1)
+        {
+            underbarrel.DetachFrom(this);
+            underbarrel = underbarrel1;
+            underbarrel.AttachTo(this);
+            return;
+        }
+        if (attachment is Accessory accessory1)
+        {
+            accessory.DetachFrom(this);
+            accessory = accessory1;
+            accessory.AttachTo(this);
+            return;
+        }
+        if (attachment is AmmoType type)
+        {
+            ammoType.DetachFrom(this);
+            ammoType = type;
+            ammoType.AttachTo(this);
+            return;
+        }
+        Debug.LogError("Unrecognized attachment type in SwapTo!");
     }
 
     private void OnDrawGizmos()

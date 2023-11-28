@@ -188,6 +188,13 @@ public class ScoreKeeper : NetworkBehaviour
     {
         var playerId = serverRpcParams.Receive.SenderClientId;
         var pc = NetworkManager.Singleton.ConnectedClients[playerId].PlayerObject.GetComponent<PlayerCharacter>();
+        SpawnPlayer(pc);
+    }
+
+    //SERVER ONLY
+    public void SpawnPlayer(PlayerCharacter pc)
+    {
+        if (!IsServer) return;
         pc.health.Value = pc.maxHealth;
 
         if (!GameInProgress.Value && !gameMap.Initialized)
@@ -200,7 +207,6 @@ public class ScoreKeeper : NetworkBehaviour
 
         pc.PlayerMovement.SetPosition(gameMode.CalculateSpawnPoint(gameMap, pc.team.Value));
     }
-
     private void RerackTeams()
     {
         connectedPlayers.Clear();

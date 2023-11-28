@@ -13,7 +13,7 @@ public class PlayerShooting : Unity.Netcode.NetworkBehaviour
     private void Awake()
     {
         pc = GetComponent<PlayerCharacter>();
-        myCam = pc.GetComponent<Camera>();
+        myCam = pc.GetComponentInChildren<Camera>();
     }
     // Start is called before the first frame update
     void Start()

@@ -18,6 +18,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public PlayerMovement PlayerMovement { get; private set; }
 
     public Action<PlayerCharacter> OnDeath;
+    private ulong id;
 
     private void Awake()
     {
@@ -27,13 +28,13 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsOwner)
+        if (IsServer)
         {
             team = new(Team.NoTeam);
             health.OnValueChanged += (float oldv, float newv) =>
             {
                 //if (newv < 0) { DieServerRpc(); return; }
-                if (newv < 0) { ScoreKeeper.Instance.SpawnPlayerServerRpc(); return; }
+                if (newv < 0) { ScoreKeeper.Instance.SpawnPlayer(this); return; }
                 if (newv > maxHealth) { health.Value = maxHealth; }
             };
         }

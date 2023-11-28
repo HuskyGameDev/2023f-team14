@@ -18,6 +18,7 @@ public class NetworkManagerUI : MonoBehaviour
             NetworkManager.Singleton.Shutdown();
             ChangeUI(true);
         });
+        
         ServerButton.onClick.AddListener(() =>
         {
             NetworkManager.Singleton.StartServer();
@@ -33,20 +34,22 @@ public class NetworkManagerUI : MonoBehaviour
             NetworkManager.Singleton.StartClient();
             ChangeUI(false);
         });
-
+        
         ChangeUI(true);
     }
 
     void Start()
     {
+
         NetworkManager.Singleton.OnClientStopped += (b) => ChangeUI(true);
     }
 
     private void ChangeUI(bool c)
     {
-        ServerButton.gameObject.SetActive(c);
-        HostButton.gameObject.SetActive(c);
-        ClientButton.gameObject.SetActive(c);
+        //disable buttons for relay
+        ServerButton.gameObject.SetActive(!c);
+        HostButton.gameObject.SetActive(!c);
+        ClientButton.gameObject.SetActive(!c);
         DCButton.gameObject.SetActive(!c);
     }
 }

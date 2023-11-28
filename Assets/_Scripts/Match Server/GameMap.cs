@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "MapData")]
@@ -16,6 +17,7 @@ public class GameMap : ScriptableObject
     private Vector3[] spawnPointLocations;
 
     private SpawnPoint[] spawnPoints;
+    public bool Initialized { get; private set; }
 
     private void Awake()
     {
@@ -30,32 +32,41 @@ public class GameMap : ScriptableObject
             spawnPoints[i].transform.position = spawnPointLocations[i];
         }
 
-        TagPoints(spawnPoints, gm, numTeams);
+        TagPoints(gm, numTeams);
+
+        Initialized = true;
     }
 
-    public void TagPoints(SpawnPoint[] points, GameMode gm)
+    public void DespawnSpawnPoints()
     {
-        TagPoints(points, gm, gm.MinNumTeams);
+        foreach (SpawnPoint point in spawnPoints)
+            Destroy(point);
     }
 
-    public void TagPoints(SpawnPoint[] points, GameMode gm, int numTeams)
+    public void TagPoints(GameMode gm)
     {
+        TagPoints(gm, gm.MinNumTeams);
+    }
+
+    public void TagPoints(GameMode gm, int numTeams)
+    {
+        numTeams = Max(numTeams, gm.MinNumTeams);
         switch (gm.Algo)
         {
             case SpawnPointTaggingAlgorithm.ShardSplit:
-                ShardSplit(points, numTeams);
+                ShardSplit(numTeams);
                 break;
             case SpawnPointTaggingAlgorithm.AroundPositions:
                 //TODO: update with map-specific transforms from gm
-                Vector3[] transforms = new Vector3[gm.prefabs.Length];
-                for (int i = 0; i < gm.prefabs.Length; i++)
+                Vector3[] transforms = new Vector3[gm.prefabs.Count];
+                for (int i = 0; i < gm.prefabs.Count; i++)
                 {
-                    transforms[i] = gm.prefabs[i].transform.position;
+                    transforms[i] = gm.prefabs[i].position;
                 }
-                AroundPositions(points, transforms, numTeams);
+                AroundPositions(transforms, numTeams);
                 break;
             default: //Default to FFA spawn points
-                foreach (SpawnPoint p in points)
+                foreach (SpawnPoint p in spawnPoints)
                     p.teamTagMask = (ushort)Team.NoTeam;
                 break;
         }
@@ -76,11 +87,11 @@ public class GameMap : ScriptableObject
     /// This algorithm splits the points into roughly equal sets in nearby areas. Each set is tagged for only one team.
     /// </summary>
     /// <param name="points">All spawn points for this map.</param>
-    private void ShardSplit(SpawnPoint[] points, int numTeams)
+    private void ShardSplit(int numTeams)
     {
-        int numSpawnPoints = points.Length;
+        int numSpawnPoints = spawnPoints.Length;
         var centralPointPos = Vector3.zero;
-        foreach (SpawnPoint p in points)
+        foreach (SpawnPoint p in spawnPoints)
         {
             centralPointPos += p.transform.position;
         }
@@ -94,31 +105,32 @@ public class GameMap : ScriptableObject
     /// <param name="points">All spawn points on the map.</param>
     /// <param name="positions">An array with the first numTeams elements being positions of ordered, team-specific transforms.</param>
     /// <param name="numTeams">The number of teams in game.</param>
-    private void AroundPositions(SpawnPoint[] points, Vector3[] positions, int numTeams)
+    private void AroundPositions(Vector3[] positions, int numTeams)
     {
-        if (numTeams == 0 || points.Length == 0 || positions.Length == 0) return;
-
+        if (spawnPoints.Length == 0 || positions.Length == 0) return;
         int i, j, shortestIndex;
         Vector3 pos;
-        int len = points.Length;
+        int len = spawnPoints.Length;
         float dist, shortest;
 
         for (i = 0; i < len; i++)
         {
+            spawnPoints[i].teamTagMask = 0;
             shortestIndex = 0;
             pos = positions[i % numTeams];
             shortest = float.MaxValue;
             for (j = i; j < len; j++)
             {
-                dist = Vector3.Distance(points[j].transform.position, pos);
+                //Debug.Log(spawnPoints[j].transform.position);
+                dist = Vector3.Distance(spawnPoints[j].transform.position, pos);
                 if (dist < shortest)
                 {
                     shortest = dist;
                     shortestIndex = j;
                 }
             }
-            (points[i], points[shortestIndex]) = (points[shortestIndex], points[i]); //This is just fancy notation for swap
-            points[i].teamTagMask += (ushort)Math.Pow(2, i % numTeams);
+            (spawnPoints[i], spawnPoints[shortestIndex]) = (spawnPoints[shortestIndex], spawnPoints[i]); //This is just fancy notation for swap
+            spawnPoints[i].teamTagMask += (ushort)Math.Pow(2, i % numTeams);
         }
 
         /*
@@ -144,5 +156,11 @@ public class GameMap : ScriptableObject
             point.teamTagMask = (ushort)Math.Pow(2, shortestIndex);
         }
         */
+    }
+
+    private int Max(int a, int b)
+    {
+        if (a >= b) return a;
+        return b;
     }
 }

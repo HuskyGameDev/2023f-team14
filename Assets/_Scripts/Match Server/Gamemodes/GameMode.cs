@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using Unity.Mathematics;
 
 [CreateAssetMenu(menuName = "GameMode")]
 public class GameMode : ScriptableObject
@@ -39,19 +40,25 @@ public class GameMode : ScriptableObject
     /* */
 
     [Header("Objective Data")]
-    public NetworkObject[] prefabs;
+    public List<Objective> prefabs;
 
+    private ScoreKeeper sk;
+    private System.Random random = new();
 
     /* */
 
-    private Unity.Mathematics.Random random;
+    private void Awake()
+    {
+    }
     public void Initialize()
     {
-        random = new Unity.Mathematics.Random();
-        foreach (NetworkObject prefab in prefabs)
+        prefabs = new();
+        sk = ScoreKeeper.Instance;
+        foreach (Objective prefab in prefabs)
         {
-            NetworkObject o = Instantiate(prefab);
+            NetworkObject o = Instantiate(prefab.prefab);
             o.Spawn();
+            o.gameObject.transform.position = prefab.position;
         }
     }
 
@@ -87,10 +94,18 @@ public class GameMode : ScriptableObject
     public Vector3 CalculateSpawnPoint(GameMap map, Team playerTeam)
     {
         var points = map.GetValidSpawnPoints(playerTeam);
-        points.RemoveAll((p) => p.IsEnemyPresent);
+        points.RemoveAll((p) => points.Count > 1 && p.IsEnemyPresent);
 
         //randomly select any point for our team that an enemy isn't in
-        return points[random.NextInt(points.Count)].transform.position;
+        Debug.Log("Seeing " + points.Count + " spawn points");
+        return points[random.Next(points.Count)].transform.position;
+    }
+
+    [Serializable]
+    public struct Objective
+    {
+        public Vector3 position;
+        public NetworkObject prefab;
     }
 }
 

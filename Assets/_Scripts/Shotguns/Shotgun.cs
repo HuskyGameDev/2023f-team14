@@ -19,6 +19,8 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     private LayerMask playerMask;
     [SerializeField]
     private Transform modelBarrelEnd;
+
+    private readonly Dictionary<AttachmentID, IAttachment> availableAttachments = new();
     private Ray[] pelletRays;
     private float MaxHitDistance => 45;
 
@@ -45,14 +47,14 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     }
 
 
-    //TODO Spawn projectiles + hitscan from gun barrel.
+    //TODO Render projectiles + hitscan from gun barrel.
     [ServerRpc]
     public void FireServerRpc(Vector3 pos, Vector3 forward, Vector3 right, Vector3 up, ServerRpcParams serverRpcParams = default)
     {
         if (serverRpcParams.Receive.SenderClientId != OwnerClientId) return;
 
-        var client = NetworkManager.ConnectedClients[OwnerClientId].PlayerObject.GetComponent<PlayerCharacter>();
-        Camera clientCam = client.GetComponent<Camera>();
+        var client = NetworkManager.ConnectedClients[serverRpcParams.Receive.SenderClientId].PlayerObject.GetComponent<PlayerCharacter>();
+        Camera clientCam = client.camera;
         Vector2[] spread = barrel.GetPelletSpread(ammoType.numPellets);
         Vector3 pelletDir;
 
@@ -63,8 +65,8 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
         {
             pelletDir = Vector3.RotateTowards(forward, right * Mathf.Sign(spread[i].x), Mathf.Abs(spread[i].x), 0f);
             pelletDir = Vector3.RotateTowards(pelletDir, up * Mathf.Sign(spread[i].y), Mathf.Abs(spread[i].y), 0f);
-            //pelletRays[i] = new Ray(modelBarrelEnd.position, pelletDir);
-            pelletRays[i] = new Ray(pos, pelletDir);
+            pelletRays[i] = new Ray(modelBarrelEnd.position, pelletDir);
+            //pelletRays[i] = new Ray(pos, pelletDir);
         }
 
         PlayerCharacter pc;
@@ -88,23 +90,59 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
             /// </summary>
             /// <returns></returns>
             case FireMode.Hitscan:
-                for (int i = 0; i < spread.Length; i++)
+                for (int i = 0; i < pelletRays.Length; i++)
                 {
 
                     //Actually do a raycast.
                     if (Physics.Raycast(pelletRays[i], out RaycastHit hit, playerMask))
                     {
+                        if (!hit.transform.gameObject.CompareTag("Player")) continue;
                         pc = hit.transform.gameObject.GetComponent<PlayerCharacter>();
 
                         //Hit!
-                        if (pc.team.Value != client.team.Value)
-                            pc.Hit(OwnerClientId, Damage);
+                        if (pc.team.Value != client.team.Value || pc.team.Value == Team.NoTeam && client.team.Value == Team.NoTeam)
+                            pc.Hit(serverRpcParams.Receive.SenderClientId, Damage);
                     }
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    [ServerRpc]
+    public void SwapToServerRpc(AttachmentID id)
+    {
+        if (!availableAttachments.TryGetValue(id, out var attachment)) return;
+        if (attachment is Barrel barrel1)
+        {
+            barrel.DetachFrom(this);
+            barrel = barrel1;
+            barrel.AttachTo(this);
+            return;
+        }
+        if (attachment is Underbarrel underbarrel1)
+        {
+            underbarrel.DetachFrom(this);
+            underbarrel = underbarrel1;
+            underbarrel.AttachTo(this);
+            return;
+        }
+        if (attachment is Accessory accessory1)
+        {
+            accessory.DetachFrom(this);
+            accessory = accessory1;
+            accessory.AttachTo(this);
+            return;
+        }
+        if (attachment is AmmoType type)
+        {
+            ammoType.DetachFrom(this);
+            ammoType = type;
+            ammoType.AttachTo(this);
+            return;
+        }
+        Debug.LogError("Unrecognized attachment type in SwapTo!");
     }
 
     private void OnDrawGizmos()

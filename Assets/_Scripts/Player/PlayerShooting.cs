@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerShooting : Unity.Netcode.NetworkBehaviour
 {
+    public Shotgun shotgunPrefab;
     public Shotgun shotgun;
     private Camera myCam;
     private PlayerCharacter pc;
@@ -18,9 +20,18 @@ public class PlayerShooting : Unity.Netcode.NetworkBehaviour
     {
     }
 
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        shotgun = Instantiate(shotgunPrefab);
+        shotgun.GetComponent<NetworkObject>().Spawn();
+    }
+
     public void OnShoot()
     {
         if (!IsOwner) return;
+
+        if (!shotgun) return;
         shotgun.FireServerRpc(myCam.transform.position, myCam.transform.forward, myCam.transform.right, myCam.transform.up);
     }
 

@@ -44,7 +44,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     // SERVER SIDE ONLY
     public void Hit(ulong assailant, float damage)
     {
-        Debug.Log(assailant + " hit " + OwnerClientId + " for " + damage + " damage!");
+        //Debug.Log(assailant + " hit " + OwnerClientId + " for " + damage + " damage!");
         health.Value -= damage;
     }
 

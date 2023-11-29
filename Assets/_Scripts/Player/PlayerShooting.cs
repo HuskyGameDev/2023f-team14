@@ -24,7 +24,7 @@ public class PlayerShooting : Unity.Netcode.NetworkBehaviour
     {
         base.OnNetworkSpawn();
         //shotgun = Instantiate(shotgunPrefab);
-        shotgun.GetComponent<NetworkObject>().Spawn();
+        //shotgun.GetComponent<NetworkObject>().Spawn();
     }
 
     public void OnShoot()

@@ -49,7 +49,7 @@ public class MouseLook : Unity.Netcode.NetworkBehaviour
         mouseMovement = new Vector2(rawMouseMovement.x * xSensitivity * Time.deltaTime, rawMouseMovement.y * ySensitivity * Time.deltaTime);
         xRotation += mouseMovement.x;
         orientation.rotation = Quaternion.Euler(0f, orientation.rotation.eulerAngles.y + mouseMovement.x, 0f);
-        transform.localRotation = Quaternion.Euler(transform.rotation.eulerAngles.x - mouseMovement.y, 0f, 0f);
+        transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x - mouseMovement.y, 0f, 0f);
     }
 
     public Vector2 GetInput()

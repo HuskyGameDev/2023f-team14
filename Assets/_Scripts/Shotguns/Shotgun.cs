@@ -69,50 +69,58 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
         }
 
         PlayerCharacter pc;
-        switch (ammoType.fireMode)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        if (ammoType is ProjectileAmmoType ammo)
         {
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <returns></returns>
-            case FireMode.Projectile:
-                for (int i = 0; i < spread.Length; i++)
-                {
-                    NetworkObject pellet = Instantiate<NetworkObject>(ammoType.pelletPrefab, pelletRays[i].origin, Quaternion.Euler(pelletRays[i].direction));
-                    pellet.SpawnWithOwnership(OwnerClientId);
-                }
-                break;
-
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <returns></returns>
-            case FireMode.Hitscan:
-                for (int i = 0; i < pelletRays.Length; i++)
-                {
-
-                    //Actually do a raycast.
-                    if (Physics.Raycast(pelletRays[i], out RaycastHit hit, playerMask))
-                    {
-                        if (!hit.transform.gameObject.CompareTag("Player")) continue;
-                        pc = hit.transform.gameObject.GetComponent<PlayerCharacter>();
-
-                        //Hit!
-                        if (pc.team.Value != client.team.Value || pc.team.Value == Team.NoTeam && client.team.Value == Team.NoTeam)
-                            pc.Hit(serverRpcParams.Receive.SenderClientId, Damage);
-                        SpawnPelletTrailClientRpc(pelletRays[i], hit.transform.position);
-                    }
-                    SpawnPelletTrailClientRpc(pelletRays[i], pelletRays[i].origin + pelletRays[i].direction * MaxHitDistance);
-                }
-                break;
-            default:
-                break;
+            for (int i = 0; i < spread.Length; i++)
+            {
+                NetworkObject pellet = Instantiate<NetworkObject>(((ProjectileAmmoType)ammoType).pelletPrefab, pelletRays[i].origin, Quaternion.Euler(pelletRays[i].direction));
+                pellet.SpawnWithOwnership(OwnerClientId);
+            }
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        if (ammoType is HitscanAmmoType)
+        {
+            for (int i = 0; i < pelletRays.Length; i++)
+            {
+
+                //Actually do a raycast.
+                if (Physics.Raycast(pelletRays[i], out RaycastHit hit))
+                {
+                    SpawnPelletTrailClientRpc(modelBarrelEnd.position, hit.point);
+                    if (!hit.transform.gameObject.CompareTag("Player")) continue;
+                    pc = hit.transform.gameObject.GetComponent<PlayerCharacter>();
+
+                    //Hit!
+                    if (pc.team.Value != client.team.Value || pc.team.Value == Team.NoTeam && client.team.Value == Team.NoTeam)
+                        pc.Hit(serverRpcParams.Receive.SenderClientId, Damage);
+                }
+                SpawnPelletTrailClientRpc(modelBarrelEnd.position, pelletRays[i].origin + pelletRays[i].direction * MaxHitDistance);
+            }
+        }
+
     }
     [ClientRpc]
-    private void SpawnPelletTrailClientRpc(Ray ray, Vector3 endpoint)
+    private void SpawnPelletTrailClientRpc(Vector3 origin, Vector3 endpoint)
     {
+        //TODO: Pool these for the love of god
+        GameObject bulletTrailEffect = Instantiate(((HitscanAmmoType)ammoType).pelletTrail, origin, Quaternion.identity);
+
+        LineRenderer lr = bulletTrailEffect.GetComponent<LineRenderer>();
+
+        lr.SetPosition(0, origin);
+        lr.SetPosition(1, endpoint);
+
+        Destroy(bulletTrailEffect, 0.2f);
     }
 
     [ServerRpc]
@@ -148,15 +156,5 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
             return;
         }
         Debug.LogError("Unrecognized attachment type in SwapTo!");
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (pelletRays == null || !IsServer) return;
-        Gizmos.color = Color.red;
-        for (int i = 0; i < pelletRays.Length; i++)
-        {
-            Gizmos.DrawRay(pelletRays[i].origin, pelletRays[i].direction * MaxHitDistance);
-        }
     }
 }

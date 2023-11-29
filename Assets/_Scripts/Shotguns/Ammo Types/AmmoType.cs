@@ -6,15 +6,6 @@ using UnityEngine;
 public abstract class AmmoType : MonoBehaviour, IAttachment
 {
     public int numPellets;
-    public FireMode fireMode;
-    public NetworkObject pelletPrefab;
-
     public abstract void AttachTo(Shotgun shotgun);
     public abstract void DetachFrom(Shotgun shotgun);
-}
-
-public enum FireMode
-{
-    Projectile,
-    Hitscan
 }

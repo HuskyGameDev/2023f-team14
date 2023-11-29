@@ -65,8 +65,7 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
         {
             pelletDir = Vector3.RotateTowards(forward, right * Mathf.Sign(spread[i].x), Mathf.Abs(spread[i].x), 0f);
             pelletDir = Vector3.RotateTowards(pelletDir, up * Mathf.Sign(spread[i].y), Mathf.Abs(spread[i].y), 0f);
-            pelletRays[i] = new Ray(modelBarrelEnd.position, pelletDir);
-            //pelletRays[i] = new Ray(pos, pelletDir);
+            pelletRays[i] = new Ray(pos, pelletDir);
         }
 
         PlayerCharacter pc;
@@ -102,12 +101,18 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
                         //Hit!
                         if (pc.team.Value != client.team.Value || pc.team.Value == Team.NoTeam && client.team.Value == Team.NoTeam)
                             pc.Hit(serverRpcParams.Receive.SenderClientId, Damage);
+                        SpawnPelletTrailClientRpc(pelletRays[i], hit.transform.position);
                     }
+                    SpawnPelletTrailClientRpc(pelletRays[i], pelletRays[i].origin + pelletRays[i].direction * MaxHitDistance);
                 }
                 break;
             default:
                 break;
         }
+    }
+    [ClientRpc]
+    private void SpawnPelletTrailClientRpc(Ray ray, Vector3 endpoint)
+    {
     }
 
     [ServerRpc]

@@ -758,8 +758,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 30
+<<<<<<< Updated upstream
   jumpHeight: 5.5
   gravityForce: -19
+=======
+  jumpHeight: 6.41
+  gravityForce: -40
+>>>>>>> Stashed changes
   gravityDownwardAcceleration: 2.2
 --- !u!114 &6713454048968448715
 MonoBehaviour:

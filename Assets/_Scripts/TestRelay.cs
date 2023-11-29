@@ -9,6 +9,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class TestRelay : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public class TestRelay : MonoBehaviour
     string userInput;
     string joinCode;
     public TMP_Text joinCodeDisplay;
+    public GameObject inputField;
+    public GameObject background;
+    public GameObject tutorialText;
     //[SerializeField] NetworkManager networkManager;
     private async void Start(){
         await UnityServices.InitializeAsync();
@@ -52,6 +56,14 @@ public class TestRelay : MonoBehaviour
             if(canvas != null){
                 joinCodeDisplay = canvas.transform.Find("HUD_JoinCode").GetComponent<TMP_Text>();
                 joinCodeDisplay.text = "JoinCode: " + joinCode;
+                
+                inputField = GameObject.Find("RelayCodeEntry");
+                inputField.SetActive(false);
+                background = GameObject.Find("BlackBackground");
+                background.SetActive(false);
+                tutorialText = GameObject.Find("RelayTutorialMessage");
+                tutorialText.SetActive(false);
+                
             }
             
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetHostRelayData(
@@ -74,8 +86,19 @@ public class TestRelay : MonoBehaviour
         try{
             Debug.Log("Joining Relay with code: " + joinCode);
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-
-       
+            GameObject canvas = GameObject.Find("Canvas");
+            if(canvas != null){
+                
+                inputField = GameObject.Find("RelayCodeEntry");
+                inputField.SetActive(false);
+                background = GameObject.Find("BlackBackground");
+                background.SetActive(false);
+                joinCodeDisplay = canvas.transform.Find("HUD_JoinCode").GetComponent<TMP_Text>();
+                joinCodeDisplay.text = "";
+                tutorialText = GameObject.Find("RelayTutorialMessage");
+                tutorialText.SetActive(false);
+                
+            }
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetClientRelayData(
                 joinAllocation.RelayServer.IpV4,
                 (ushort)joinAllocation.RelayServer.Port,

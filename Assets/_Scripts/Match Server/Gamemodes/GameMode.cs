@@ -41,9 +41,7 @@ public class GameMode : ScriptableObject
 
     [Header("Objective Data")]
     public List<Objective> prefabs;
-
-    private ScoreKeeper sk;
-    private System.Random random = new();
+    private readonly System.Random random = new();
 
     /* */
 
@@ -53,7 +51,6 @@ public class GameMode : ScriptableObject
     public void Initialize()
     {
         prefabs = new();
-        sk = ScoreKeeper.Instance;
         foreach (Objective prefab in prefabs)
         {
             NetworkObject o = Instantiate(prefab.prefab);

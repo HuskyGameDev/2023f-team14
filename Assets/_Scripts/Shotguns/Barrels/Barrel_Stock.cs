@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Barrel_Stock : Barrel
 {
-    private readonly float radiusRadians = 0.14f;
+    private readonly float radiusRadians = 0.2f;
     public override void AttachTo(Shotgun shotgun)
     {
         throw new System.NotImplementedException();

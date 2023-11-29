@@ -630,6 +630,7 @@ GameObject:
   - component: {fileID: 3481888063063561396}
   - component: {fileID: 4968057102214067868}
   - component: {fileID: 6935414080235960192}
+  - component: {fileID: 4336801754323314921}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -817,6 +818,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1df257edaf937384c8e85f9fc2662309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shotgunPrefab: {fileID: 0}
   shotgun: {fileID: 4364490730217457368}
 --- !u!114 &6935414080235960192
 MonoBehaviour:
@@ -868,6 +870,19 @@ MonoBehaviour:
   m_DefaultActionMap: std
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 5628600416472462795}
+--- !u!114 &4336801754323314921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6425623844949647248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17e7e3407ec54471397f3b29d8e4479d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ammo: {fileID: 0}
 --- !u!1 &6539037458555118775
 GameObject:
   m_ObjectHideFlags: 0

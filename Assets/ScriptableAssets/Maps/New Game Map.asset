@@ -12,14 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e6161105ccd7f94b8fa9d1267f18380, type: 3}
   m_Name: New Game Map
   m_EditorClassIdentifier: 
-<<<<<<< Updated upstream
   Name: Operation Schlocker
   spawnPointPrefab: {fileID: 7233580164855170838, guid: d0d97285c83732647b99b4cd82db5a6b, type: 3}
   spawnPointLocations:
   - {x: 0, y: 0, z: 0}
-=======
-  Name: 
-  spawnPointPrefab: {fileID: 0}
-  spawnPointLocations: []
->>>>>>> Stashed changes
   spawnPoints: []

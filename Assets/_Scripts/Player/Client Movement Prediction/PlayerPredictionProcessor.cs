@@ -9,6 +9,7 @@ public struct PlayerMovementInput : PRN.IInput, Unity.Netcode.INetworkSerializab
     public int tick;
     public Vector2 lateralMovement;
     public bool jump;
+    public Vector2 mouseLook;
 
     public void SetTick(int tick) => this.tick = tick;
     public readonly int GetTick() => tick;
@@ -18,6 +19,7 @@ public struct PlayerMovementInput : PRN.IInput, Unity.Netcode.INetworkSerializab
         serializer.SerializeValue(ref tick);
         serializer.SerializeValue(ref lateralMovement);
         serializer.SerializeValue(ref jump);
+        serializer.SerializeValue(ref mouseLook);
     }
 }
 
@@ -27,6 +29,7 @@ public struct PlayerMovementState : PRN.IState, Unity.Netcode.INetworkSerializab
     public Vector3 position;
     public Vector3 movement;
     public Vector3 gravity;
+    public Quaternion orientation;
 
     public void SetTick(int tick) => this.tick = tick;
     public readonly int GetTick() => tick;
@@ -37,6 +40,7 @@ public struct PlayerMovementState : PRN.IState, Unity.Netcode.INetworkSerializab
         serializer.SerializeValue(ref position);
         serializer.SerializeValue(ref movement);
         serializer.SerializeValue(ref gravity);
+        serializer.SerializeValue(ref orientation);
     }
 }
 
@@ -81,12 +85,30 @@ public class PlayerPredictionProcessor : MonoBehaviour, PRN.IProcessor<PlayerMov
 
         controller.Move(movement + gravity);
 
+        Look(input.mouseLook);
+
         return new()
         {
             position = transform.position,
             movement = movement,
-            gravity = gravity
+            gravity = gravity,
+            orientation = transform.rotation
         };
+    }
+
+    private void Look(Vector2 mouseInput)
+    {
+        // Retrieve rotation
+        var xRotation = transform.rotation.eulerAngles.x;
+        xRotation -= mouseInput.y;
+        var yRotation = transform.rotation.eulerAngles.y;
+        yRotation += mouseInput.x;
+
+        // Clamp x rotation
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+        // Rotate player's model to match camera
+        transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
     }
 
     /// <summary>

@@ -46,19 +46,15 @@ public class MouseLook : Unity.Netcode.NetworkBehaviour
     private void Look(Vector2 rawMouseMovement)
     {
         if (Cursor.visible) return;
-
         mouseMovement = new Vector2(rawMouseMovement.x * xSensitivity * Time.deltaTime, rawMouseMovement.y * ySensitivity * Time.deltaTime);
+        xRotation += mouseMovement.x;
+        orientation.rotation = Quaternion.Euler(0f, orientation.rotation.eulerAngles.y + mouseMovement.x, 0f);
+        transform.localRotation = Quaternion.Euler(transform.rotation.eulerAngles.x - mouseMovement.y, 0f, 0f);
+    }
 
-        // Retrieve rotation
-        xRotation -= mouseMovement.y;
-        yRotation += mouseMovement.x;
-
-        // Clamp x rotation
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-        // Rotate player's model to match camera
-        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
-        orientation.rotation = Quaternion.Euler(0f, yRotation, 0f);
+    public Vector2 GetInput()
+    {
+        return mouseMovement;
     }
 
     private void LockCursor(bool lok = true)

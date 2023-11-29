@@ -65,62 +65,49 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
         {
             pelletDir = Vector3.RotateTowards(forward, right * Mathf.Sign(spread[i].x), Mathf.Abs(spread[i].x), 0f);
             pelletDir = Vector3.RotateTowards(pelletDir, up * Mathf.Sign(spread[i].y), Mathf.Abs(spread[i].y), 0f);
-            pelletRays[i] = new Ray(pos, pelletDir);
+            pelletRays[i] = new Ray(modelBarrelEnd.position, pelletDir);
+            //pelletRays[i] = new Ray(pos, pelletDir);
         }
 
         PlayerCharacter pc;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        if (ammoType is ProjectileAmmoType ammo)
+        switch (ammoType.fireMode)
         {
-            for (int i = 0; i < spread.Length; i++)
-            {
-                NetworkObject pellet = Instantiate<NetworkObject>(((ProjectileAmmoType)ammoType).pelletPrefab, pelletRays[i].origin, Quaternion.Euler(pelletRays[i].direction));
-                pellet.SpawnWithOwnership(OwnerClientId);
-            }
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        if (ammoType is HitscanAmmoType)
-        {
-            for (int i = 0; i < pelletRays.Length; i++)
-            {
-
-                //Actually do a raycast.
-                if (Physics.Raycast(pelletRays[i], out RaycastHit hit))
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
+            case FireMode.Projectile:
+                for (int i = 0; i < spread.Length; i++)
                 {
-                    SpawnPelletTrailClientRpc(modelBarrelEnd.position, hit.point);
-                    if (!hit.transform.gameObject.CompareTag("Player")) continue;
-                    pc = hit.transform.gameObject.GetComponent<PlayerCharacter>();
-
-                    //Hit!
-                    if (pc.team.Value != client.team.Value || pc.team.Value == Team.NoTeam && client.team.Value == Team.NoTeam)
-                        pc.Hit(serverRpcParams.Receive.SenderClientId, Damage);
+                    NetworkObject pellet = Instantiate<NetworkObject>(ammoType.pelletPrefab, pelletRays[i].origin, Quaternion.Euler(pelletRays[i].direction));
+                    pellet.SpawnWithOwnership(OwnerClientId);
                 }
-                SpawnPelletTrailClientRpc(modelBarrelEnd.position, pelletRays[i].origin + pelletRays[i].direction * MaxHitDistance);
-            }
+                break;
+
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
+            case FireMode.Hitscan:
+                for (int i = 0; i < pelletRays.Length; i++)
+                {
+
+                    //Actually do a raycast.
+                    if (Physics.Raycast(pelletRays[i], out RaycastHit hit, playerMask))
+                    {
+                        if (!hit.transform.gameObject.CompareTag("Player")) continue;
+                        pc = hit.transform.gameObject.GetComponent<PlayerCharacter>();
+
+                        //Hit!
+                        if (pc.team.Value != client.team.Value || pc.team.Value == Team.NoTeam && client.team.Value == Team.NoTeam)
+                            pc.Hit(serverRpcParams.Receive.SenderClientId, Damage);
+                    }
+                }
+                break;
+            default:
+                break;
         }
-
-    }
-    [ClientRpc]
-    private void SpawnPelletTrailClientRpc(Vector3 origin, Vector3 endpoint)
-    {
-        //TODO: Pool these for the love of god
-        GameObject bulletTrailEffect = Instantiate(((HitscanAmmoType)ammoType).pelletTrail, origin, Quaternion.identity);
-
-        LineRenderer lr = bulletTrailEffect.GetComponent<LineRenderer>();
-
-        lr.SetPosition(0, origin);
-        lr.SetPosition(1, endpoint);
-
-        Destroy(bulletTrailEffect, 0.2f);
     }
 
     [ServerRpc]
@@ -156,5 +143,15 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
             return;
         }
         Debug.LogError("Unrecognized attachment type in SwapTo!");
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (pelletRays == null || !IsServer) return;
+        Gizmos.color = Color.red;
+        for (int i = 0; i < pelletRays.Length; i++)
+        {
+            Gizmos.DrawRay(pelletRays[i].origin, pelletRays[i].direction * MaxHitDistance);
+        }
     }
 }

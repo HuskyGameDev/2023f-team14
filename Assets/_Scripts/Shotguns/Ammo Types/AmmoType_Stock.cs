@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AmmoType_Stock : HitscanAmmoType
+public class AmmoType_Stock : AmmoType
 {
     public override void AttachTo(Shotgun shotgun)
     {

@@ -9,8 +9,6 @@ public struct PlayerMovementInput : PRN.IInput, Unity.Netcode.INetworkSerializab
     public int tick;
     public Vector2 lateralMovement;
     public bool jump;
-    public Vector3 forward;
-    public Vector3 right;
 
     public void SetTick(int tick) => this.tick = tick;
     public readonly int GetTick() => tick;
@@ -20,8 +18,6 @@ public struct PlayerMovementInput : PRN.IInput, Unity.Netcode.INetworkSerializab
         serializer.SerializeValue(ref tick);
         serializer.SerializeValue(ref lateralMovement);
         serializer.SerializeValue(ref jump);
-        serializer.SerializeValue(ref forward);
-        serializer.SerializeValue(ref right);
     }
 }
 
@@ -71,7 +67,7 @@ public class PlayerPredictionProcessor : MonoBehaviour, PRN.IProcessor<PlayerMov
 
     public PlayerMovementState Process(PlayerMovementInput input, TimeSpan deltaTime)
     {
-        movement = (float)deltaTime.TotalSeconds * movementSpeed * (input.forward * input.lateralMovement.y + input.right * input.lateralMovement.x).normalized;
+        movement = (float)deltaTime.TotalSeconds * movementSpeed * (playerOrientation.forward * input.lateralMovement.y + playerOrientation.right * input.lateralMovement.x).normalized;
         if (controller.isGrounded)
         {
             gravity = Vector3.zero;
@@ -85,20 +81,12 @@ public class PlayerPredictionProcessor : MonoBehaviour, PRN.IProcessor<PlayerMov
 
         controller.Move(movement + gravity);
 
-        Look(input.forward);
-
         return new()
         {
             position = transform.position,
             movement = movement,
-            gravity = gravity,
+            gravity = gravity
         };
-    }
-
-    private void Look(Vector3 forward)
-    {
-        // Rotate player's model to match camera
-        transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);
     }
 
     /// <summary>

@@ -16,7 +16,7 @@ public class GameMap : ScriptableObject
     [SerializeField]
     private Vector3[] spawnPointLocations;
 
-    public SpawnPoint[] spawnPoints;
+    private SpawnPoint[] spawnPoints;
     public bool Initialized { get; private set; }
 
     private void Awake()
@@ -39,7 +39,6 @@ public class GameMap : ScriptableObject
 
     public void DespawnSpawnPoints()
     {
-        Debug.Log("Despawning spawn points...");
         foreach (SpawnPoint point in spawnPoints)
             Destroy(point);
     }

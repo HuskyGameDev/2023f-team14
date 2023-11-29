@@ -39,6 +39,14 @@ public class ScoreKeeper : NetworkBehaviour
         teamCounts = new();
     }
 
+    void Start()
+    {
+    }
+
+    void Update()
+    {
+    }
+
 
     public override void OnNetworkSpawn()
     {
@@ -48,7 +56,6 @@ public class ScoreKeeper : NetworkBehaviour
             ConnectionNotificationManager.Instance.OnClientConnectionNotification += ClientConnectionChange;
             NetworkManager.Singleton.OnServerStopped += EndGame;
             GameInProgress.Value = false;
-            StartGameServerRpc();
         }
         if (!IsHost) startButton.enabled = false;
     }
@@ -190,9 +197,9 @@ public class ScoreKeeper : NetworkBehaviour
         if (!IsServer) return;
         pc.health.Value = pc.maxHealth;
 
-        if (!GameInProgress.Value)
+        if (!GameInProgress.Value && !gameMap.Initialized)
         {
-            StartGameServerRpc();
+            gameMap.Initialize(gameMode, NumTeams);
         }
 
         //!This call is temporary. Remove when PlayerCharacter.DieServerRpc is implemented

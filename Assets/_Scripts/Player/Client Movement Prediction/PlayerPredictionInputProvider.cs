@@ -53,8 +53,6 @@ public class PlayerPredictionInputProvider : MonoBehaviour, PRN.IInputProvider<P
     public PlayerMovementInput GetInput()
     {
         input.jump = pendingJump;
-        input.forward = mouseLook.Forward;
-        input.right = mouseLook.Right;
         pendingJump = false;
         return input;
     }

@@ -14,9 +14,6 @@ public class MouseLook : Unity.Netcode.NetworkBehaviour
     private float xRotation;
     private float yRotation;
 
-    public Vector3 Forward => new(transform.forward.x, 0f, transform.forward.z);
-    public Vector3 Right => new(transform.right.x, 0f, transform.right.z);
-
     private Vector2 mouseMovement;
     private PlayerControls playerControls;
 
@@ -49,22 +46,19 @@ public class MouseLook : Unity.Netcode.NetworkBehaviour
     private void Look(Vector2 rawMouseMovement)
     {
         if (Cursor.visible) return;
+
         mouseMovement = new Vector2(rawMouseMovement.x * xSensitivity * Time.deltaTime, rawMouseMovement.y * ySensitivity * Time.deltaTime);
-        //xRotation += mouseMovement.x;
+
+        // Retrieve rotation
+        xRotation -= mouseMovement.y;
+        yRotation += mouseMovement.x;
+
         // Clamp x rotation
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        xRotation = transform.rotation.eulerAngles.x - mouseMovement.y;
-        if (xRotation > 85f && xRotation < 160f) xRotation = 85f;
-        if (xRotation > 160f && xRotation < 275f) xRotation = 275f;
-
-
-        orientation.rotation = Quaternion.Euler(0f, orientation.rotation.eulerAngles.y + mouseMovement.x, 0f);
-        transform.rotation = Quaternion.Euler(xRotation, orientation.rotation.eulerAngles.y + mouseMovement.x, 0f);
-    }
-
-    public Vector2 GetInput()
-    {
-        return mouseMovement;
+        // Rotate player's model to match camera
+        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
+        orientation.rotation = Quaternion.Euler(0f, yRotation, 0f);
     }
 
     private void LockCursor(bool lok = true)

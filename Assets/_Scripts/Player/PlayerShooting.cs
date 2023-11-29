@@ -23,8 +23,8 @@ public class PlayerShooting : Unity.Netcode.NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        //shotgun = Instantiate(shotgunPrefab);
-        //shotgun.GetComponent<NetworkObject>().Spawn();
+        shotgun = Instantiate(shotgunPrefab);
+        shotgun.GetComponent<NetworkObject>().Spawn();
     }
 
     public void OnShoot()

@@ -928,8 +928,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numPellets: 12
-  fireMode: 0
-  pelletPrefab: {fileID: 0}
+  pelletTrail: {fileID: 2513029014111703424, guid: fcf90dd5fd75fa7428498247301fa553, type: 3}
 --- !u!1 &8560270632414643065
 GameObject:
   m_ObjectHideFlags: 0

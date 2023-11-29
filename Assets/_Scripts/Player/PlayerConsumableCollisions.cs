@@ -13,13 +13,12 @@ public class PlayerConsumableCollisions : Unity.Netcode.NetworkBehaviour
 
     void OnTriggerEnter(Collider consumable)
     {
-        Destroy(consumable.gameObject);
         if (!IsOwner) return;
         if (consumable.gameObject.tag == "AmmoBox")
         {
+            Destroy(consumable.gameObject);
             AmmoConsumptionServerRpc(OwnerClientId);
         }
-
     }
     // Start is called before the first frame update
     void Start()

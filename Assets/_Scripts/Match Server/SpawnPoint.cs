@@ -20,7 +20,7 @@ public class SpawnPoint : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.tag.Equals("Player")) return;
+        if (!other.CompareTag("Player")) return;
 
         var pc = other.GetComponent<PlayerCharacter>();
         pc.OnDeath += Leave;
@@ -29,7 +29,7 @@ public class SpawnPoint : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.tag.Equals("Player")) return;
+        if (!other.CompareTag("Player")) return;
 
         var pc = other.GetComponent<PlayerCharacter>();
         Leave(pc);

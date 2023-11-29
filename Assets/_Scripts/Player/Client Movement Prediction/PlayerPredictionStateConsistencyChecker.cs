@@ -7,6 +7,5 @@ public class PlayerPredictionStateConsistencyChecker : MonoBehaviour, PRN.IState
     public bool IsConsistent(PlayerMovementState serverState, PlayerMovementState ownerState) =>
         Vector3.Distance(serverState.position, ownerState.position) <= 0.01f
             && Vector3.Distance(serverState.movement, ownerState.movement) <= 0.01f
-            && Vector3.Distance(serverState.gravity, ownerState.gravity) <= 0.01f
-            && Quaternion.Angle(serverState.orientation, ownerState.orientation) <= 0.01f;
+            && Vector3.Distance(serverState.gravity, ownerState.gravity) <= 0.01f;
 }

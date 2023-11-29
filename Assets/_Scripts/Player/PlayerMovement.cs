@@ -50,6 +50,8 @@ public class PlayerMovement : Unity.Netcode.NetworkBehaviour
 
         networkHandler.onSendStateToClient += SendStateClientRpc;
         networkHandler.onSendInputToServer += SendInputServerRpc;
+
+        networkHandler.onState += OnState;
     }
 
     private void FixedUpdate()
@@ -61,6 +63,10 @@ public class PlayerMovement : Unity.Netcode.NetworkBehaviour
     {
         base.OnDestroy();
         networkHandler.Dispose();
+    }
+
+    private void OnState(PlayerMovementState state)
+    {
     }
 
     [ServerRpc]

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4506451, g: 0.5006123, b: 0.5749601, a: 1}
+  m_IndirectSpecularColor: {r: 0.45064545, g: 0.5006128, b: 0.5749613, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -257,6 +257,7 @@ GameObject:
   - component: {fileID: 55270439}
   - component: {fileID: 55270438}
   - component: {fileID: 55270443}
+  - component: {fileID: 55270444}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -368,6 +369,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ammo: {fileID: 807159823}
+--- !u!114 &55270444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55270437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e3f68fa5ccdae4e80203ed29d4ee1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &115387438
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3204,7 +3217,7 @@ Transform:
   m_GameObject: {fileID: 1471155079}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.0108113, y: 14.227642, z: 7.9421625}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3824,7 +3837,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9a5da28554ed6ee47bb96af126a77294, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -20
+      value: -35
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9a5da28554ed6ee47bb96af126a77294, type: 3}
       propertyPath: m_LocalPosition.z

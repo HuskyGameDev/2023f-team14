@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GenerateMeshColliders : MonoBehaviour
 {
-    void Start()
+    void Awake()
     {
         // Loop through all children of the current GameObject
         foreach (Transform child in transform)

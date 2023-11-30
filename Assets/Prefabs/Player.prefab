@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 5628600416472462795}
   - component: {fileID: 28131021938005609}
   - component: {fileID: 8065260219571461264}
-  - component: {fileID: 1832981477852228894}
+  - component: {fileID: 8453041963305121955}
   m_Layer: 0
   m_Name: PlayerCam
   m_TagString: Untagged
@@ -140,7 +140,7 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 531564611911326347}
   m_Enabled: 1
---- !u!114 &1832981477852228894
+--- !u!114 &8453041963305121955
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -164,7 +164,7 @@ MonoBehaviour:
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
+  UseQuaternionSynchronization: 1
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
@@ -630,7 +630,7 @@ GameObject:
   - component: {fileID: 3481888063063561396}
   - component: {fileID: 4968057102214067868}
   - component: {fileID: 6935414080235960192}
-  - component: {fileID: 6635356846768317818}
+  - component: {fileID: 4336801754323314921}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -758,8 +758,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 30
-  jumpHeight: 5.5
-  gravityForce: -19
+  jumpHeight: 6.41
+  gravityForce: -40
   gravityDownwardAcceleration: 2.2
 --- !u!114 &6713454048968448715
 MonoBehaviour:
@@ -870,7 +870,7 @@ MonoBehaviour:
   m_DefaultActionMap: std
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 5628600416472462795}
---- !u!114 &6635356846768317818
+--- !u!114 &4336801754323314921
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -928,8 +928,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numPellets: 12
-  fireMode: 1
-  pelletPrefab: {fileID: 0}
+  pelletTrail: {fileID: 2513029014111703424, guid: fcf90dd5fd75fa7428498247301fa553, type: 3}
 --- !u!1 &8560270632414643065
 GameObject:
   m_ObjectHideFlags: 0

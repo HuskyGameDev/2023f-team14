@@ -27,7 +27,8 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
         camera = GetComponentInChildren<Camera>();
         PlayerMovement = GetComponent<PlayerMovement>();
         GameObject canvas = GameObject.Find("Canvas");
-        if(canvas != null){
+        if (canvas != null)
+        {
             healthBar = canvas.transform.Find("HUD_Health_GreenBackground").GetComponent<Image>();
         }
     }
@@ -35,7 +36,8 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         //if is client
-        if(IsOwner){
+        if (IsOwner)
+        {
             health.OnValueChanged += (float oldv, float newv) =>
             {
                 healthBar.fillAmount -= .1f;
@@ -57,8 +59,8 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     // SERVER SIDE ONLY
     public void Hit(ulong assailant, float damage)
     {
-        Debug.Log(assailant + " hit " + OwnerClientId + " for " + damage + " damage!");
-        health.Value -= damage;  
+        //Debug.Log(assailant + " hit " + OwnerClientId + " for " + damage + " damage!");
+        health.Value -= damage;
     }
 
     [ServerRpc]
@@ -86,21 +88,24 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     [ServerRpc]
     private void UpdateHealthBarServerRpc(ulong playerID)
     {
-        ClientRpcParams clientRpcParams = new ClientRpcParams{
-            Send = new ClientRpcSendParams{
-                TargetClientIds = new ulong[]{playerID}
+        ClientRpcParams clientRpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { playerID }
             }
         };
         UpdateHealthBarClientRpc(clientRpcParams);
     }
 
     [ClientRpc]
-    private void UpdateHealthBarClientRpc(ClientRpcParams clientRpcParams = default){
-        if(!IsOwner) return;
+    private void UpdateHealthBarClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        if (!IsOwner) return;
         if (healthBar != null)
-            {
-                //Set healthBar to be current health
-                healthBar.fillAmount = health.Value / 100;
-            }
+        {
+            //Set healthBar to be current health
+            healthBar.fillAmount = health.Value / 100;
+        }
     }
 }

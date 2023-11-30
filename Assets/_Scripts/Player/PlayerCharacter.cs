@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
 {
@@ -20,14 +21,26 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public Action<PlayerCharacter> OnDeath;
     private ulong id;
 
+    public Image healthBar;
     private void Awake()
     {
         camera = GetComponentInChildren<Camera>();
         PlayerMovement = GetComponent<PlayerMovement>();
+        GameObject canvas = GameObject.Find("Canvas");
+        if(canvas != null){
+            healthBar = canvas.transform.Find("HUD_Health_GreenBackground").GetComponent<Image>();
+        }
     }
 
     public override void OnNetworkSpawn()
     {
+        //if is client
+        if(IsOwner){
+            health.OnValueChanged += (float oldv, float newv) =>
+            {
+                healthBar.fillAmount -= .1f;
+            };
+        }
         if (IsServer)
         {
             team = new(Team.NoTeam);
@@ -45,7 +58,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public void Hit(ulong assailant, float damage)
     {
         Debug.Log(assailant + " hit " + OwnerClientId + " for " + damage + " damage!");
-        health.Value -= damage;
+        health.Value -= damage;  
     }
 
     [ServerRpc]
@@ -67,5 +80,27 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
         Debug.Log("spawnPos: " + spawnPosition);
         ResetPositionServerRpc(spawnPosition);
         health.Value = maxHealth;
+        //healthBar.fillAmount = 1f;
+    }
+
+    [ServerRpc]
+    private void UpdateHealthBarServerRpc(ulong playerID)
+    {
+        ClientRpcParams clientRpcParams = new ClientRpcParams{
+            Send = new ClientRpcSendParams{
+                TargetClientIds = new ulong[]{playerID}
+            }
+        };
+        UpdateHealthBarClientRpc(clientRpcParams);
+    }
+
+    [ClientRpc]
+    private void UpdateHealthBarClientRpc(ClientRpcParams clientRpcParams = default){
+        if(!IsOwner) return;
+        if (healthBar != null)
+            {
+                //Set healthBar to be current health
+                healthBar.fillAmount = health.Value / 100;
+            }
     }
 }

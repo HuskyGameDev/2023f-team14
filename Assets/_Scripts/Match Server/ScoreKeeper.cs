@@ -195,7 +195,7 @@ public class ScoreKeeper : NetworkBehaviour
     public void SpawnPlayer(PlayerCharacter pc)
     {
         if (!IsServer) return;
-        pc.health.Value = pc.maxHealth;
+        //pc.health.Value = pc.maxHealth;
 
         if (!GameInProgress.Value && !gameMap.Initialized)
         {

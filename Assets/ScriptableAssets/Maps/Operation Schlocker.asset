@@ -10,10 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e6161105ccd7f94b8fa9d1267f18380, type: 3}
-  m_Name: New Game Map
+  m_Name: Operation Schlocker
   m_EditorClassIdentifier: 
   Name: Operation Schlocker
   spawnPointPrefab: {fileID: 7233580164855170838, guid: d0d97285c83732647b99b4cd82db5a6b, type: 3}
   spawnPointLocations:
-  - {x: 0, y: 0, z: 0}
+  - {x: -73, y: -8, z: -49.4}
+  - {x: 125, y: -8, z: -78}
+  - {x: 120, y: -8, z: 9}
+  - {x: 132, y: -8, z: 74}
+  - {x: 132, y: -8, z: 116}
+  - {x: -67, y: -8, z: 116}
+  - {x: -2, y: -8, z: 23}
+  - {x: 44, y: -8, z: 23}
+  - {x: 55, y: 14, z: 50}
+  - {x: 54, y: 14, z: 40}
+  - {x: 54, y: 14, z: 0}
+  - {x: -34, y: 14, z: -41}
+  - {x: -37, y: 14, z: 40}
   spawnPoints: []

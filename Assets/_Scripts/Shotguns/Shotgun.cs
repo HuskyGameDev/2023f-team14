@@ -48,6 +48,13 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
 
 
     //TODO Render projectiles + hitscan from gun barrel.
+    /// <summary>
+    /// Fire's a player's shotgun.
+    /// </summary>
+    /// <param name="pos">the position of the player's camera</param>
+    /// <param name="forward">the player's forward vector</param>
+    /// <param name="right">the player's right vector</param>
+    /// <param name="up">the player's up vector</param>
     [ServerRpc]
     public void FireServerRpc(Vector3 pos, Vector3 forward, Vector3 right, Vector3 up, ServerRpcParams serverRpcParams = default)
     {
@@ -70,10 +77,7 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
 
         PlayerCharacter pc;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+
         if (ammoType is ProjectileAmmoType ammo)
         {
             for (int i = 0; i < spread.Length; i++)
@@ -84,10 +88,6 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         if (ammoType is HitscanAmmoType)
         {
             for (int i = 0; i < pelletRays.Length; i++)
@@ -109,6 +109,12 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
         }
 
     }
+
+    /// <summary>
+    /// Spawns a LineRenderer between two coordinates.
+    /// </summary>
+    /// <param name="origin">The position to render the trail from</param>
+    /// <param name="endpoint">The position to render the trail to</param>
     [ClientRpc]
     private void SpawnPelletTrailClientRpc(Vector3 origin, Vector3 endpoint)
     {
@@ -123,10 +129,18 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
         Destroy(bulletTrailEffect, 0.2f);
     }
 
+    /// <summary>
+    /// Swaps an attachment onto this shotgun, detaching the previous one.
+    /// </summary>
+    /// <param name="id">The attachment to swap to</param>
     [ServerRpc]
-    public void SwapToServerRpc(AttachmentID id)
+    public void SwapToServerRpc(AttachmentID id, ServerRpcParams serverRpcParams = default)
     {
-        if (!availableAttachments.TryGetValue(id, out var attachment)) return;
+        if (!availableAttachments.TryGetValue(id, out var attachment))
+        {
+            Debug.LogError("Attachment " + id + " not found! Requested by player " + serverRpcParams.Receive.SenderClientId);
+            return;
+        }
         if (attachment is Barrel barrel1)
         {
             barrel.DetachFrom(this);
@@ -155,6 +169,6 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
             ammoType.AttachTo(this);
             return;
         }
-        Debug.LogError("Unrecognized attachment type in SwapTo!");
+        Debug.LogError("Unrecognized type of attachment " + id + "!");
     }
 }

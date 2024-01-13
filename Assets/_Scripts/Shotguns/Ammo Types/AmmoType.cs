@@ -5,6 +5,9 @@ using UnityEngine;
 
 public abstract class AmmoType : MonoBehaviour, IAttachment
 {
+    /// <summary>
+    /// The number of pellets to fire at a time.
+    /// </summary>
     public int numPellets;
     public abstract void AttachTo(Shotgun shotgun);
     public abstract void DetachFrom(Shotgun shotgun);

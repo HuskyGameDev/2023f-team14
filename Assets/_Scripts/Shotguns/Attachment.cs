@@ -13,6 +13,14 @@ public enum AttachmentID : uint
 
 public interface IAttachment
 {
+    /// <summary>
+    /// This is called whenever this attachment is attached to a shotgun.
+    /// </summary>
+    /// <param name="shotgun">The shotgun attached to</param>
     public void AttachTo(Shotgun shotgun);
+    /// <summary>
+    /// This is called whenever this attachment is detached from a shotgun.
+    /// </summary>
+    /// <param name="shotgun">The shotgun detached from</param>
     public void DetachFrom(Shotgun shotgun);
 }

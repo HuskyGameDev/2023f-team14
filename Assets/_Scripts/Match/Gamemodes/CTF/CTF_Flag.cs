@@ -23,6 +23,7 @@ namespace PumpingAction.GameModes.CTF
         {
             if (!initialized)
             {
+                //TODO
                 this.transform.position = Vector3.zero;
                 initialized = true;
             }

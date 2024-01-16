@@ -4082,6 +4082,63 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 820434444}
   m_SourcePrefab: {fileID: 100100000, guid: 9a5da28554ed6ee47bb96af126a77294, type: 3}
+--- !u!1001 &1740060351560600623
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647115072181056046, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5446962492449463380, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
+      propertyPath: m_Name
+      value: Shotgun_Stock
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d6d33bedfca985344a3c308a50d1ed92, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -4096,3 +4153,4 @@ SceneRoots:
   - {fileID: 1429167074}
   - {fileID: 1471155081}
   - {fileID: 1932363993}
+  - {fileID: 1740060351560600623}

@@ -62,7 +62,7 @@ public class NetworkObjectPool : NetworkBehaviour
     }
 
     /// <summary>
-    /// Gets and instance of the given prefab from the pool. The prefab must be registered.
+    /// Gets an instance of the given prefab from the pool. The prefab must be registered.
     /// </summary>
     /// <param name="prefab"></param>
     /// <param name="position"></param>

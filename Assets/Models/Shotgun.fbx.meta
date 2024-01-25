@@ -3,7 +3,17 @@ guid: 68c45191f93e8bc429c3f7e54f6151ca
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Placeholder_metal
+    second: {fileID: 2100000, guid: 309f4a73735fc094a9e5112812358c67, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Placeholder_wood
+    second: {fileID: 2100000, guid: 575ef6cfdcd53434ebe3f963cdd9e800, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

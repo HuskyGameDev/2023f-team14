@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -2618039811147201839, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}
+  - {fileID: 2100000, guid: 575ef6cfdcd53434ebe3f963cdd9e800, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -213,7 +213,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 6826993222338170726, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}
+  - {fileID: 2100000, guid: 309f4a73735fc094a9e5112812358c67, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -248,8 +248,8 @@ PrefabInstance:
       value: Barrel
       objectReference: {fileID: 0}
     - target: {fileID: 181250384571154012, guid: 3c7ce9fe2b36dac46a75cae8c40419de, type: 3}
-      propertyPath: m_IsActive
-      value: 1
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3991610577454947967, guid: 3c7ce9fe2b36dac46a75cae8c40419de, type: 3}
       propertyPath: m_LocalPosition.x
@@ -291,6 +291,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7712633261216510709, guid: 3c7ce9fe2b36dac46a75cae8c40419de, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -312,10 +316,6 @@ PrefabInstance:
     - target: {fileID: 3141183605591564585, guid: 290cd8ee830c94342b5ed1f096ca4fef, type: 3}
       propertyPath: m_Name
       value: Accessory
-      objectReference: {fileID: 0}
-    - target: {fileID: 3141183605591564585, guid: 290cd8ee830c94342b5ed1f096ca4fef, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7404312679825460951, guid: 290cd8ee830c94342b5ed1f096ca4fef, type: 3}
       propertyPath: m_LocalPosition.x
@@ -419,10 +419,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: AmmoType
       objectReference: {fileID: 0}
-    - target: {fileID: 9152852749024636285, guid: 82c72eb557c35e3488b07a0c900cae09, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -444,10 +440,6 @@ PrefabInstance:
     - target: {fileID: 5532246612186189584, guid: c825047871b4d0246aad3bbbf5424693, type: 3}
       propertyPath: m_Name
       value: Underbarrel
-      objectReference: {fileID: 0}
-    - target: {fileID: 5532246612186189584, guid: c825047871b4d0246aad3bbbf5424693, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7147754784570215474, guid: c825047871b4d0246aad3bbbf5424693, type: 3}
       propertyPath: m_LocalPosition.x

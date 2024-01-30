@@ -32,10 +32,10 @@ public class PlayerShooting : Unity.Netcode.NetworkBehaviour
 
         if (!shotgun) return;
         shotgun.FireServerRpc(myCam.transform.position, myCam.transform.forward, myCam.transform.right, myCam.transform.up);
+        Recoil();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Recoil()
     {
 
     }

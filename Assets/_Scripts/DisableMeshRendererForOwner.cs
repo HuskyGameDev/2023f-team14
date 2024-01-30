@@ -7,7 +7,7 @@ public class DisableMeshRendererForOwner : NetworkBehaviour
 {
     public override void OnNetworkSpawn()
     {
-        if (!IsOwner && !IsServer) return;
+        if (!IsOwner) return;
 
         var list = gameObject.GetComponentsInChildren<MeshRenderer>();
         foreach (var l in list)

@@ -34,7 +34,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
             health.OnValueChanged += (float oldv, float newv) =>
             {
                 //if (newv < 0) { DieServerRpc(); return; }
-                if (newv < 0) { ScoreKeeper.Instance.SpawnPlayer(this); return; }
+                if (newv < 0) { Kill(); return; }
                 if (newv > maxHealth) { health.Value = maxHealth; }
             };
         }
@@ -59,6 +59,14 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     private void ResetPositionServerRpc(Vector3 pos)
     {
         transform.position = pos;
+    }
+
+    //SERVER ONLY
+    public void Kill()
+    {
+        if (!IsServer) return;
+        OnDeath?.Invoke(this);
+        ScoreKeeper.Instance.SpawnPlayer(this);
     }
 
     //SERVER ONLY

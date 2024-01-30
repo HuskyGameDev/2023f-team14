@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -27,6 +28,8 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     //TODO Finish implementing vv
     //run calcs using ammo and  other attachments
     private float Damage => 10;
+
+    public Action OnFire;
 
 
     // Start is called before the first frame update
@@ -108,11 +111,11 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
                 SpawnPelletTrailClientRpc(modelBarrelEnd.position, pelletRays[i].origin + pelletRays[i].direction * MaxHitDistance);
             }
         }
-
+        OnFire?.Invoke();
     }
 
     /// <summary>
-    /// Spawns a LineRenderer between two coordinates.
+    /// Spawns a TrailRenderer between two coordinates.
     /// </summary>
     /// <param name="origin">The position to render the trail from</param>
     /// <param name="endpoint">The position to render the trail to</param>

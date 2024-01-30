@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class Viewmodel : NetworkBehaviour
+public class OnlyActiveForOwner : NetworkBehaviour
 {
     public override void OnNetworkSpawn()
     {

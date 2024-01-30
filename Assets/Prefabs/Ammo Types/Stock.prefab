@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 4420498592844116455}
   - component: {fileID: 6225268872291313980}
   m_Layer: 0
-  m_Name: AmmoType_Stock
+  m_Name: Stock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

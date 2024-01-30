@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class PlayerShooting : Unity.Netcode.NetworkBehaviour
 {
-    public Shotgun shotgunPrefab;
     public Shotgun shotgun;
     private Camera myCam;
     private PlayerCharacter pc;

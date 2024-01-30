@@ -80,10 +80,11 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
 
         if (ammoType is ProjectileAmmoType ammo)
         {
+            NetworkObject pellet;
             for (int i = 0; i < spread.Length; i++)
             {
-                NetworkObject pellet = Instantiate<NetworkObject>(((ProjectileAmmoType)ammoType).pelletPrefab, pelletRays[i].origin, Quaternion.Euler(pelletRays[i].direction));
-                pellet.SpawnWithOwnership(OwnerClientId);
+                pellet = NetworkObjectPool.Singleton.GetNetworkObject(((ProjectileAmmoType)ammoType).pelletPrefab.gameObject, modelBarrelEnd.position, Quaternion.Euler(pelletRays[i].direction));
+                pellet.GetComponent<Projectile>().Launch(pelletRays[i].direction);
             }
         }
 

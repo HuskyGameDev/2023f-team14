@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public class PlayerModel : NetworkBehaviour
+public class DisableMeshRendererForOwner : NetworkBehaviour
 {
     public override void OnNetworkSpawn()
     {

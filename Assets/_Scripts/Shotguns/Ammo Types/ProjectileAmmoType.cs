@@ -8,5 +8,5 @@ public abstract class ProjectileAmmoType : AmmoType
     /// <summary>
     /// The pellet to be spawned when this ammo type is fired.
     /// </summary>
-    public Projectile pelletPrefab;
+    public NetworkProjectile pelletPrefab;
 }

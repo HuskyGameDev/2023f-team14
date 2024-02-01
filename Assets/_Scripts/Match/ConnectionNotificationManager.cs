@@ -14,6 +14,7 @@ public class ConnectionNotificationManager : MonoBehaviour
     }
 
     public event Action<ulong, ConnectionStatus> OnClientConnectionNotification;
+    public event Action<ulong, ConnectionStatus> OnOwnerConnectionNotification;
 
     private void Awake()
     {
@@ -59,6 +60,7 @@ public class ConnectionNotificationManager : MonoBehaviour
     private void OnClientConnectedCallback(ulong clientid)
     {
         OnClientConnectionNotification?.Invoke(clientid, ConnectionStatus.Connected);
+
     }
     private void OnClientDisconnectedCallback(ulong clientid)
     {

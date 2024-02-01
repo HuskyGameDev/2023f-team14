@@ -321,6 +321,7 @@ GameObject:
   - component: {fileID: 4968057102214067868}
   - component: {fileID: 6935414080235960192}
   - component: {fileID: 4336801754323314921}
+  - component: {fileID: 8348562910310046217}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -508,7 +509,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1df257edaf937384c8e85f9fc2662309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shotgun: {fileID: 2892389820747486817}
+  Shotgun: {fileID: 2892389820747486817}
+  Viewmodel: {fileID: 8664193774693401467}
 --- !u!114 &6935414080235960192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,7 +524,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: 5f3c766cc6a60b544bfa1735911d2c52, type: 3}
-  m_NotificationBehavior: 1
+  m_NotificationBehavior: 3
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -554,6 +556,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 2cd5a14d-799a-4653-9590-9b7d7b56c54c
     m_ActionName: std/Escape[/Keyboard/escape,/Keyboard/leftCtrl]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: d7633e36-292b-4f98-9b8e-c0beb8f2c0c8
+    m_ActionName: std/Swap[/Keyboard/e]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: std
@@ -572,6 +578,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ammo: {fileID: 0}
+--- !u!114 &8348562910310046217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6425623844949647248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 806319d67d262914abc433f1c0a81785, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  swapUIPrefab: {fileID: 5217612325260214594, guid: 44dfba0cf8c52c74c8803a0042c05498, type: 3}
+  mouseLook: {fileID: 28131021938005609}
 --- !u!1001 &1746501057340958936
 PrefabInstance:
   m_ObjectHideFlags: 0

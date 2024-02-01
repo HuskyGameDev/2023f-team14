@@ -141,6 +141,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   modelBarrelEnd: {fileID: 126262886720479748}
+  extra: {fileID: 1093457424987790687, guid: 7e25e98af7c4c594d86c6d8f92c08c9e, type: 3}
 --- !u!114 &115293496834747967
 MonoBehaviour:
   m_ObjectHideFlags: 0

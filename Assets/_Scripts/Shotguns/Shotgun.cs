@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class Shotgun : Unity.Netcode.NetworkBehaviour
+public class Shotgun : NetworkBehaviour
 {
     [Header("Attachments")]
     [SerializeField]
@@ -30,12 +30,13 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     private float Damage => 10;
 
     public Action OnFire;
+    private AttachmentDepot depot;
 
 
     // Start is called before the first frame update
     private void Start()
     {
-
+        depot = new();
     }
 
     // Update is called once per frame
@@ -44,9 +45,19 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
 
     }
 
+    [SerializeField]
+    private AmmoType extra;
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        availableAttachments.Add(barrel.ID, barrel);
+        availableAttachments.Add(underbarrel.ID, underbarrel);
+        availableAttachments.Add(accessory.ID, accessory);
+        availableAttachments.Add(ammoType.ID, ammoType);
+
+        //! TESTING PURPOSES ONLY -- REMOVE BEFORE RELEASE
+        availableAttachments.Add(AttachmentID.AmmoType_Fireball, extra);
     }
 
 
@@ -90,9 +101,7 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
                 pellet.GetComponent<Projectile>().Launch(pelletRays[i].direction);
             }
         }
-
-
-        if (ammoType is HitscanAmmoType)
+        else if (ammoType is HitscanAmmoType)
         {
             for (int i = 0; i < pelletRays.Length; i++)
             {
@@ -140,11 +149,15 @@ public class Shotgun : Unity.Netcode.NetworkBehaviour
     [ServerRpc]
     public void SwapToServerRpc(AttachmentID id, ServerRpcParams serverRpcParams = default)
     {
-        if (!availableAttachments.TryGetValue(id, out var attachment))
+        IAttachment attachment;
+        if (!availableAttachments.TryGetValue(id, out attachment))
         {
             Debug.LogError("Attachment " + id + " not found! Requested by player " + serverRpcParams.Receive.SenderClientId);
             return;
         }
+        Debug.Log(attachment.ID);
+        Debug.Log(attachment);
+        Debug.Log(attachment is AmmoType);
         if (attachment is Barrel barrel1)
         {
             barrel.DetachFrom(this);

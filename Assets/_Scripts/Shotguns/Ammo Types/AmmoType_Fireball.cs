@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AmmoType_Fireball : ProjectileAmmoType
 {
+    public override AttachmentID ID => AttachmentID.AmmoType_Fireball;
+
     public override void AttachTo(Shotgun shotgun)
     {
     }

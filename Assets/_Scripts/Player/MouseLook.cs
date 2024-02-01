@@ -42,7 +42,7 @@ public class MouseLook : Unity.Netcode.NetworkBehaviour
         // Subscribe to actions
         playerControls.std.Look.performed += ctx => Look(ctx.ReadValue<Vector2>());
         playerControls.std.Look.canceled += ctx => mouseMovement = Vector2.zero;
-        playerControls.std.Escape.started += ctx => LockCursor(Cursor.visible);
+        playerControls.std.Pause.started += ctx => LockCursor(Cursor.visible);
 
     }
 
@@ -67,10 +67,10 @@ public class MouseLook : Unity.Netcode.NetworkBehaviour
         return mouseMovement;
     }
 
-    private void LockCursor(bool lok = true)
+    public void LockCursor(bool isLocked = true)
     {
-        Cursor.lockState = lok ? CursorLockMode.Locked : CursorLockMode.None;
-        Cursor.visible = !lok;
+        Cursor.lockState = isLocked ? CursorLockMode.Locked : CursorLockMode.None;
+        Cursor.visible = !isLocked;
     }
 
     private void OnDrawGizmos()

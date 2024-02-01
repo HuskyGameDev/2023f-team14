@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Accessory_Stock : Accessory
 {
+    public override AttachmentID ID => AttachmentID.Accessory_Stock;
+
     public override void AttachTo(Shotgun shotgun)
     {
-        throw new System.NotImplementedException();
     }
 
     public override void DetachFrom(Shotgun shotgun)
     {
-        throw new System.NotImplementedException();
     }
 }

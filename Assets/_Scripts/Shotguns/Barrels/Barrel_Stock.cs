@@ -3,14 +3,15 @@ using UnityEngine;
 public class Barrel_Stock : Barrel
 {
     private readonly float radiusRadians = 0.2f;
+
+    public override AttachmentID ID => AttachmentID.Barrel_Stock;
+
     public override void AttachTo(Shotgun shotgun)
     {
-        throw new System.NotImplementedException();
     }
 
     public override void DetachFrom(Shotgun shotgun)
     {
-        throw new System.NotImplementedException();
     }
 
 

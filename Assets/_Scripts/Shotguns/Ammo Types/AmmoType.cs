@@ -9,6 +9,9 @@ public abstract class AmmoType : MonoBehaviour, IAttachment
     /// The number of pellets to fire at a time.
     /// </summary>
     public int numPellets;
+
+    public abstract AttachmentID ID { get; }
+
     public abstract void AttachTo(Shotgun shotgun);
     public abstract void DetachFrom(Shotgun shotgun);
 }

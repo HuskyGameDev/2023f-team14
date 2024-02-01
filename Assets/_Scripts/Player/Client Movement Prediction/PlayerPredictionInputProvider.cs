@@ -7,6 +7,8 @@ public class PlayerPredictionInputProvider : MonoBehaviour, PRN.IInputProvider<P
     [SerializeField]
     private MouseLook mouseLook;
     private PlayerMovementInput input;
+
+
     private PlayerControls playerControls;
     private bool pendingJump = false;
 

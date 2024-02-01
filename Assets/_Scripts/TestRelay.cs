@@ -16,11 +16,14 @@ public class TestRelay : MonoBehaviour
     string userInput;
     string joinCode;
     public TMP_Text joinCodeDisplay;
+    public TMP_InputField entryBox;
     //[SerializeField] NetworkManager networkManager;
-    private async void Start(){
+    private async void Start()
+    {
         await UnityServices.InitializeAsync();
 
-        AuthenticationService.Instance.SignedIn += () => {
+        AuthenticationService.Instance.SignedIn += () =>
+        {
             Debug.Log("Signed in " + AuthenticationService.Instance.PlayerId);
         };
 
@@ -28,32 +31,38 @@ public class TestRelay : MonoBehaviour
 
     }
 
-    public void ReadStringInput(string codeEntry){
-        
+    public void ReadStringInput(string codeEntry)
+    {
         userInput = codeEntry;
-        if(userInput.Equals("host")){
-            
+        if (userInput.Equals("host"))
+        {
+
             CreateRelay();
-            
-        }else{
+
+        }
+        else
+        {
             JoinRelay(userInput);
         }
     }
 
-    private async void CreateRelay(){
+    private async void CreateRelay()
+    {
         //Note: the number '3' indicates how many players (NOT INCLUDING THE HOST) can connect to the relay
-        try {
+        try
+        {
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
 
             joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
             Debug.Log("Join Code: " + joinCode);
             GameObject canvas = GameObject.Find("Canvas");
-            if(canvas != null){
+            if (canvas != null)
+            {
                 joinCodeDisplay = canvas.transform.Find("HUD_JoinCode").GetComponent<TMP_Text>();
                 joinCodeDisplay.text = "JoinCode: " + joinCode;
             }
-            
+
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetHostRelayData(
                 allocation.RelayServer.IpV4,
                 (ushort)allocation.RelayServer.Port,
@@ -63,19 +72,22 @@ public class TestRelay : MonoBehaviour
             );
 
             NetworkManager.Singleton.StartHost();
-            
-        } catch (RelayServiceException e) {
+        }
+        catch (RelayServiceException e)
+        {
             Debug.Log(e);
         }
 
     }
 
-    private async void JoinRelay(string joinCode){
-        try{
+    private async void JoinRelay(string joinCode)
+    {
+        try
+        {
             Debug.Log("Joining Relay with code: " + joinCode);
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-       
+
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetClientRelayData(
                 joinAllocation.RelayServer.IpV4,
                 (ushort)joinAllocation.RelayServer.Port,
@@ -85,9 +97,14 @@ public class TestRelay : MonoBehaviour
                 joinAllocation.HostConnectionData
             );
 
-            NetworkManager.Singleton.StartClient();
-          
-        } catch (RelayServiceException e){
+            if (NetworkManager.Singleton.StartClient())
+            {
+                Destroy(entryBox);
+            }
+
+        }
+        catch (RelayServiceException e)
+        {
             Debug.Log(e);
         }
     }

@@ -44,6 +44,8 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     // SERVER SIDE ONLY
     public void Hit(ulong assailant, float damage)
     {
+        if (!IsServer)
+            throw new MethodAccessException("This method should not be called by clients!");
         //Debug.Log(assailant + " hit " + OwnerClientId + " for " + damage + " damage!");
         health.Value -= damage;
     }
@@ -61,18 +63,19 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
         transform.position = pos;
     }
 
-    //SERVER ONLY
     public void Kill()
     {
-        if (!IsServer) return;
+        if (!IsServer)
+            throw new MethodAccessException("This method should not be called by clients!");
         OnDeath?.Invoke(this);
         ScoreKeeper.Instance.SpawnPlayer(this);
     }
 
-    //SERVER ONLY
     public void Respawn(Vector3 spawnPosition)
     {
-        Debug.Log("spawnPos: " + spawnPosition);
+        if (!IsServer)
+            throw new MethodAccessException("This method should not be called by clients!");
+        //Debug.Log("spawnPos: " + spawnPosition);
         ResetPositionServerRpc(spawnPosition);
         health.Value = maxHealth;
     }

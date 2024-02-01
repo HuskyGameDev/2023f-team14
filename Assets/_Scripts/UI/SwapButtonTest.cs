@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class SwapButtonTest : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public Shotgun s;
+    public void Swap()
     {
-
+        s.SwapToServerRpc(AttachmentID.AmmoType_Fireball);
     }
+
 }

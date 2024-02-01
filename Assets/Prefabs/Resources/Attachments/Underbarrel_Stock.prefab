@@ -92,6 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7147754784570215474}
+  - component: {fileID: 7031508885440750920}
   m_Layer: 0
   m_Name: Underbarrel_Stock
   m_TagString: Untagged
@@ -116,6 +117,18 @@ Transform:
   - {fileID: 4576133434118247915}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7031508885440750920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5532246612186189584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ebe836986e72e048945be8fb787890b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6104220347439122009
 GameObject:
   m_ObjectHideFlags: 0

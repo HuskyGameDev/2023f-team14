@@ -7,6 +7,13 @@ public class ShotgunViewmodel : MonoBehaviour
     [SerializeField]
     private Shotgun shotgun;
 
+    public void Shoot()
+    {
+        MuzzleFlash();
+    }
 
+    private void MuzzleFlash()
+    {
+    }
 
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,10 @@ using UnityEngine;
 public class PlayerPredictionInputProvider : MonoBehaviour, PRN.IInputProvider<PlayerMovementInput>
 {
     [SerializeField]
-    private MouseLook mouseLook;
+    private PlayerControlsMonoBehaviour[] monoScripts;
+    [SerializeField]
+    private PlayerControlsNetworkBehaviour[] networkScripts;
+    public readonly Dictionary<Type, IRequirePlayerControls> externalScripts = new();
     private PlayerMovementInput input;
 
 
@@ -14,9 +18,10 @@ public class PlayerPredictionInputProvider : MonoBehaviour, PRN.IInputProvider<P
 
     void Awake()
     {
+
         InitializeComponents();
         SubscribeToInputEvents();
-        InitializeMouseLook();
+        InitializeExternalScripts();
     }
 
     private void OnEnable()
@@ -42,22 +47,45 @@ public class PlayerPredictionInputProvider : MonoBehaviour, PRN.IInputProvider<P
         //playerCamera = transform.GetComponentInChildren<Camera>();
     }
 
-    private void InitializeMouseLook()
+    private void InitializeExternalScripts()
     {
-        if (mouseLook)
+        foreach (var script in monoScripts)
         {
-            mouseLook.Initialize(playerControls);
-            return;
+            script.Initialize(playerControls);
+            externalScripts.Add(script.GetType(), script);
         }
-        Debug.LogError("No camera bound to player!");
+        foreach (var script in networkScripts)
+        {
+            script.Initialize(playerControls);
+            externalScripts.Add(script.GetType(), script);
+        }
     }
 
     public PlayerMovementInput GetInput()
     {
         input.jump = pendingJump;
-        input.forward = mouseLook.Forward;
-        input.right = mouseLook.Right;
+        if (externalScripts.TryGetValue(typeof(MouseLook), out IRequirePlayerControls t))
+        {
+            input.forward = ((MouseLook)t).Forward;
+            input.right = ((MouseLook)t).Right;
+        }
+        else Debug.LogError("Could not access MouseLook component!");
         pendingJump = false;
         return input;
     }
+}
+
+public interface IRequirePlayerControls
+{
+    public void Initialize(PlayerControls pc);
+}
+
+public abstract class PlayerControlsMonoBehaviour : MonoBehaviour, IRequirePlayerControls
+{
+    public abstract void Initialize(PlayerControls pc);
+}
+
+public abstract class PlayerControlsNetworkBehaviour : Unity.Netcode.NetworkBehaviour, IRequirePlayerControls
+{
+    public abstract void Initialize(PlayerControls pc);
 }

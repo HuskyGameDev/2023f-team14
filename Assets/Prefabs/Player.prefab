@@ -436,6 +436,7 @@ MonoBehaviour:
   processor: {fileID: 8322468688936792062}
   inputProvider: {fileID: 6713454048968448715}
   consistencyChecker: {fileID: 664941589955010318}
+  gunTilt: {fileID: 977216777921976758}
 --- !u!114 &8322468688936792062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,7 +465,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e8dd1345ca9ed94aa7fda571c4e77f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseLook: {fileID: 28131021938005609}
+  monoScripts: []
+  networkScripts:
+  - {fileID: 28131021938005609}
 --- !u!114 &664941589955010318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -634,15 +637,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: 0.9999306
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0.011780689
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 1.35
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -698,6 +701,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8664193774693401467}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 977216777921976758}
   m_SourcePrefab: {fileID: 100100000, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}
 --- !u!1 &1512568067445216649 stripped
 GameObject:
@@ -729,6 +735,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shotgun: {fileID: 2892389820747486817}
+--- !u!114 &977216777921976758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512568067445216649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1657cb594e429be45b78ad6d2c50a377, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerOrientation: {fileID: 3918668466369966540}
+  maxRotationAngles: {x: 15, y: 8, z: 20}
+  slerpStep: 0.1
 --- !u!4 &2285128245246136115 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 68c45191f93e8bc429c3f7e54f6151ca, type: 3}

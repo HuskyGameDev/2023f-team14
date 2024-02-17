@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class MouseLook : Unity.Netcode.NetworkBehaviour
+public class MouseLook : PlayerControlsNetworkBehaviour
 {
     public float xSensitivity = 100f;
     public float ySensitivity = 100f;
@@ -20,9 +20,10 @@ public class MouseLook : Unity.Netcode.NetworkBehaviour
     private Vector2 mouseMovement;
     private PlayerControls playerControls;
 
-    public void Initialize(PlayerControls controlsInstance)
+    public override void Initialize(PlayerControls pc)
     {
-        playerControls = controlsInstance;
+        playerControls = pc;
+
     }
 
     public override void OnNetworkSpawn()

@@ -14,7 +14,6 @@ public class ConnectionNotificationManager : MonoBehaviour
     }
 
     public event Action<ulong, ConnectionStatus> OnClientConnectionNotification;
-    public event Action<ulong, ConnectionStatus> OnOwnerConnectionNotification;
 
     private void Awake()
     {

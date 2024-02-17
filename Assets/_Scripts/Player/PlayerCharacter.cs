@@ -15,6 +15,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public NetworkVariable<Team> team;
     public float maxHealth;
     public new Camera camera;
+    [DoNotSerialize]
     public PlayerMovement PlayerMovement { get; private set; }
 
     public Action<PlayerCharacter> OnDeath;

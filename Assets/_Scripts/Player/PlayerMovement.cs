@@ -19,6 +19,8 @@ public class PlayerMovement : Unity.Netcode.NetworkBehaviour
     private PlayerPredictionInputProvider inputProvider;
     [SerializeField]
     private PlayerPredictionStateConsistencyChecker consistencyChecker;
+    [SerializeField]
+    private GunTilt gunTilt;
 
 
     private CharacterController controller;
@@ -67,6 +69,7 @@ public class PlayerMovement : Unity.Netcode.NetworkBehaviour
 
     private void OnState(PlayerMovementState state)
     {
+        gunTilt.MoveTilt(state);
     }
 
     [ServerRpc]
@@ -84,7 +87,8 @@ public class PlayerMovement : Unity.Netcode.NetworkBehaviour
     //SERVER ONLY
     public void SetPosition(Vector3 pos)
     {
-        if (!IsServer) return;
+        if (!IsServer)
+            throw new MethodAccessException("This method should not be called by clients!");
         controller.enabled = false;
         controller.transform.position = pos;
         controller.enabled = true;

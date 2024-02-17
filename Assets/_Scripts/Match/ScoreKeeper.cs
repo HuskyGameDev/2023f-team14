@@ -187,7 +187,8 @@ public class ScoreKeeper : NetworkBehaviour
     //SERVER ONLY
     public void SpawnPlayer(PlayerCharacter pc)
     {
-        if (!IsServer) return;
+        if (!IsServer)
+            throw new MethodAccessException("This method should not be called by clients!");
         pc.health.Value = pc.maxHealth;
 
         if (!GameInProgress.Value)

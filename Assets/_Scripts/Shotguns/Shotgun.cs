@@ -98,7 +98,7 @@ public class Shotgun : NetworkBehaviour
             for (int i = 0; i < spread.Length; i++)
             {
                 pellet = NetworkObjectPool.Singleton.GetNetworkObject(((ProjectileAmmoType)ammoType).pelletPrefab.gameObject, modelBarrelEnd.position, Quaternion.Euler(pelletRays[i].direction));
-                pellet.GetComponent<NetworkProjectile>().Launch(pelletRays[i].direction);
+                pellet.GetComponent<IProjectile>().Launch(pelletRays[i].direction);
             }
         }
         else if (ammoType is HitscanAmmoType)

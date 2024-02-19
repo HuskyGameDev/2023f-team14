@@ -14,8 +14,12 @@ public class ScoreKeeper : NetworkBehaviour
     private GameMap gameMap;
     [SerializeField]
     private Button startButton;
+    [SerializeField]
+    private Canvas inGameUI;
+    [SerializeField]
+    private Canvas menuUI;
 
-    public List<int> teamCounts;
+    private List<int> teamCounts = new();
 
 
     private readonly Dictionary<ulong, PlayerCharacter> connectedPlayers = new();
@@ -30,13 +34,6 @@ public class ScoreKeeper : NetworkBehaviour
                 $"Do you have more than one component attached to a {nameof(GameObject)}?");
         }
         Instance = this;
-
-        startButton.onClick.AddListener(() =>
-        {
-            StartGameServerRpc();
-        });
-
-        teamCounts = new();
     }
 
 
@@ -50,7 +47,7 @@ public class ScoreKeeper : NetworkBehaviour
             GameInProgress.Value = false;
             StartGameServerRpc();
         }
-        if (!IsHost) startButton.enabled = false;
+        if (!IsHost) startButton.gameObject.SetActive(false);
     }
 
     public override void OnNetworkDespawn()
@@ -90,7 +87,16 @@ public class ScoreKeeper : NetworkBehaviour
         RerackTeams();
 
         GameInProgress.Value = true;
+        GameEnterClientRpc();
     }
+
+    [ClientRpc]
+    private void GameEnterClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        inGameUI.gameObject.SetActive(true);
+        menuUI.gameObject.SetActive(false);
+    }
+
     // override OnDestroy if needed
 
     private void ClientConnectionChange(ulong id, ConnectionNotificationManager.ConnectionStatus status)
@@ -128,6 +134,13 @@ public class ScoreKeeper : NetworkBehaviour
         var newTeam = gameMode.AssignNewPlayer(teamCounts);
         pc.team.Value = newTeam;
         teamCounts = GetTeamCounts();
+        GameEnterClientRpc(new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { id }
+            }
+        });
         return newTeam;
     }
 
@@ -185,6 +198,11 @@ public class ScoreKeeper : NetworkBehaviour
     }
 
     //SERVER ONLY
+    /// <summary>
+    /// Spawns a player at a random spawn point.
+    /// </summary>
+    /// <param name="pc">The player to spawn</param>
+    /// <exception cref="MethodAccessException">If called by a client</exception>
     public void SpawnPlayer(PlayerCharacter pc)
     {
         if (!IsServer)
@@ -193,6 +211,7 @@ public class ScoreKeeper : NetworkBehaviour
 
         if (!GameInProgress.Value)
         {
+            //TODO: Is this warranted?
             StartGameServerRpc();
         }
 

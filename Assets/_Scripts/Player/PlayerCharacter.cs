@@ -39,6 +39,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
                 if (newv > maxHealth) { health.Value = maxHealth; }
             };
         }
+
         base.OnNetworkSpawn();
     }
 

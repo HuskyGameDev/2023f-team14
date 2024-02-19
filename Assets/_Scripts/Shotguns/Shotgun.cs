@@ -74,10 +74,11 @@ public class Shotgun : NetworkBehaviour
     {
         if (serverRpcParams.Receive.SenderClientId != OwnerClientId) return;
 
-        var client = NetworkManager.ConnectedClients[serverRpcParams.Receive.SenderClientId].PlayerObject.GetComponent<PlayerCharacter>();
+        PlayerCharacter client = NetworkManager.ConnectedClients[serverRpcParams.Receive.SenderClientId].PlayerObject.GetComponent<PlayerCharacter>();
         Camera clientCam = client.camera;
         Vector2[] spread = barrel.GetPelletSpread(ammoType.numPellets);
         Vector3 pelletDir;
+        PlayerCharacter pc;
 
 
         /* Calculates the rays that the pellet spread creates */
@@ -89,27 +90,30 @@ public class Shotgun : NetworkBehaviour
             pelletRays[i] = new Ray(pos, pelletDir);
         }
 
-        PlayerCharacter pc;
-
-
+        /* If the ammo type is projectile, launch the projectiles */
         if (ammoType is ProjectileAmmoType ammo)
         {
             NetworkObject pellet;
             for (int i = 0; i < spread.Length; i++)
             {
-                pellet = NetworkObjectPool.Singleton.GetNetworkObject(((ProjectileAmmoType)ammoType).pelletPrefab.gameObject, modelBarrelEnd.position, Quaternion.Euler(pelletRays[i].direction));
+                pellet = NetworkObjectPool.Instance.GetObject(((ProjectileAmmoType)ammoType).pelletPrefab.gameObject, modelBarrelEnd.position, Quaternion.Euler(pelletRays[i].direction));
                 pellet.GetComponent<IProjectile>().Launch(pelletRays[i].direction);
             }
         }
+        /* If the ammo type is hitscan, perform raycasts */
         else if (ammoType is HitscanAmmoType)
         {
             for (int i = 0; i < pelletRays.Length; i++)
             {
-
-                //Actually do a raycast.
-                if (Physics.Raycast(pelletRays[i], out RaycastHit hit))
+                //Raycast each pellet
+                if (Physics.Raycast(pelletRays[i], out RaycastHit hit, LayerMask.NameToLayer("Player")))
                 {
                     SpawnPelletTrailClientRpc(modelBarrelEnd.position, hit.point);
+                    if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
+                    {
+                        /* Render pellet hit sprites */
+                        RenderHitSpriteClientRpc(hit.point, hit.normal);
+                    }
                     if (!hit.transform.gameObject.CompareTag("Player")) continue;
                     pc = hit.transform.gameObject.GetComponent<PlayerCharacter>();
 
@@ -117,10 +121,20 @@ public class Shotgun : NetworkBehaviour
                     if (pc.team.Value != client.team.Value || pc.team.Value == Team.NoTeam && client.team.Value == Team.NoTeam)
                         pc.Hit(serverRpcParams.Receive.SenderClientId, Damage);
                 }
-                SpawnPelletTrailClientRpc(modelBarrelEnd.position, pelletRays[i].origin + pelletRays[i].direction * MaxHitDistance);
+                //SpawnPelletTrailClientRpc(modelBarrelEnd.position, pelletRays[i].origin + pelletRays[i].direction * MaxHitDistance);
             }
         }
+        /* Shotgun fire callback */
         OnFire?.Invoke();
+    }
+
+    [ClientRpc]
+    private void RenderHitSpriteClientRpc(Vector3 hitPosition, Vector3 surfaceNormal, ClientRpcParams clientRpcParams = default)
+    {
+        var go = GameObjectPool.Instance.GetObject(ammoType.HitSpritePrefab
+            , hitPosition + Vector3.ClampMagnitude(surfaceNormal, 0.02f)
+            , Quaternion.FromToRotation(Vector3.forward, surfaceNormal));
+        go.GetComponent<PelletHoleSprite>().SetReleaseTimeout(new TimeSpan(0, 0, 20), ammoType.HitSpritePrefab);
     }
 
     /// <summary>
@@ -133,7 +147,6 @@ public class Shotgun : NetworkBehaviour
     {
         //TODO: Pool these for the love of god
         GameObject bulletTrailEffect = Instantiate(((HitscanAmmoType)ammoType).pelletTrail, origin, Quaternion.identity);
-
         LineRenderer lr = bulletTrailEffect.GetComponent<LineRenderer>();
 
         lr.SetPosition(0, origin);
@@ -149,43 +162,35 @@ public class Shotgun : NetworkBehaviour
     [ServerRpc]
     public void SwapToServerRpc(AttachmentID id, ServerRpcParams serverRpcParams = default)
     {
-        IAttachment attachment;
-        if (!availableAttachments.TryGetValue(id, out attachment))
+        Type t;
+        if (!availableAttachments.TryGetValue(id, out IAttachment attachment))
         {
             Debug.LogError("Attachment " + id + " not found! Requested by player " + serverRpcParams.Receive.SenderClientId);
             return;
         }
-        Debug.Log(attachment.ID);
-        Debug.Log(attachment);
-        Debug.Log(attachment is AmmoType);
-        if (attachment is Barrel barrel1)
+        t = AttachmentDepot.GetTypeOfAttachment(id);
+
+        switch (t)
         {
-            barrel.DetachFrom(this);
-            barrel = barrel1;
-            barrel.AttachTo(this);
-            return;
+            case Type _ when t == typeof(Barrel):
+                this.SwapTo(barrel, attachment);
+                barrel = attachment as Barrel;
+                break;
+            case Type _ when t == typeof(Underbarrel):
+                this.SwapTo(underbarrel, attachment);
+                underbarrel = attachment as Underbarrel;
+                break;
+            case Type _ when t == typeof(AmmoType):
+                this.SwapTo(ammoType, attachment);
+                ammoType = attachment as AmmoType;
+                break;
+            case Type _ when t == typeof(Accessory):
+                this.SwapTo(accessory, attachment);
+                accessory = attachment as Accessory;
+                break;
+            default:
+                Debug.LogError("Unknown attachment type of " + t.GetType() + "!");
+                break;
         }
-        if (attachment is Underbarrel underbarrel1)
-        {
-            underbarrel.DetachFrom(this);
-            underbarrel = underbarrel1;
-            underbarrel.AttachTo(this);
-            return;
-        }
-        if (attachment is Accessory accessory1)
-        {
-            accessory.DetachFrom(this);
-            accessory = accessory1;
-            accessory.AttachTo(this);
-            return;
-        }
-        if (attachment is AmmoType type)
-        {
-            ammoType.DetachFrom(this);
-            ammoType = type;
-            ammoType.AttachTo(this);
-            return;
-        }
-        Debug.LogError("Unrecognized type of attachment " + id + "!");
     }
 }

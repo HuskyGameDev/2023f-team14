@@ -5,16 +5,9 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Pool;
-
-[Serializable]
-struct PoolObject
+public class NetworkObjectPool : NetworkBehaviour, IPumpingActionPool<NetworkObject>
 {
-    public GameObject Prefab;
-    public int PrespawnCount;
-}
-public class NetworkObjectPool : NetworkBehaviour
-{
-    public static NetworkObjectPool Singleton { get; private set; }
+    public static NetworkObjectPool Instance { get; private set; }
 
     [SerializeField]
     private List<PoolObject> PooledPrefabList;
@@ -23,12 +16,12 @@ public class NetworkObjectPool : NetworkBehaviour
 
     private void Awake()
     {
-        if (Singleton != null && Singleton != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(this);
             return;
         }
-        Singleton = this;
+        Instance = this;
 
     }
 
@@ -61,14 +54,7 @@ public class NetworkObjectPool : NetworkBehaviour
         }
     }
 
-    /// <summary>
-    /// Gets an instance of the given prefab from the pool. The prefab must be registered.
-    /// </summary>
-    /// <param name="prefab"></param>
-    /// <param name="position"></param>
-    /// <param name="rotation"></param>
-    /// <returns></returns>
-    public NetworkObject GetNetworkObject(GameObject prefab, Vector3 position, Quaternion rotation)
+    public NetworkObject GetObject(GameObject prefab, Vector3 position, Quaternion rotation)
     {
         var netObj = pooledObjects[prefab].Get();
         var noTransform = netObj.transform;
@@ -76,10 +62,7 @@ public class NetworkObjectPool : NetworkBehaviour
         return netObj;
     }
 
-    /// <summary>
-    /// Return an object to the pool
-    /// </summary>
-    public void ReturnNetworkObject(NetworkObject netObj, GameObject prefab)
+    public void ReturnObject(NetworkObject netObj, GameObject prefab)
     {
         pooledObjects[prefab].Release(netObj);
     }
@@ -103,6 +86,7 @@ public class NetworkObjectPool : NetworkBehaviour
 
         NetworkManager.Singleton.PrefabHandler.AddHandler(prefab, new PooledPrefabInstanceHandler(prefab, this));
     }
+
 }
 
 class PooledPrefabInstanceHandler : INetworkPrefabInstanceHandler
@@ -117,11 +101,11 @@ class PooledPrefabInstanceHandler : INetworkPrefabInstanceHandler
 
     public void Destroy(NetworkObject networkObject)
     {
-        pool.ReturnNetworkObject(networkObject, prefab);
+        pool.ReturnObject(networkObject, prefab);
     }
 
     public NetworkObject Instantiate(ulong ownerClientId, Vector3 position, Quaternion rotation)
     {
-        return pool.GetNetworkObject(prefab, position, rotation);
+        return pool.GetObject(prefab, position, rotation);
     }
 }

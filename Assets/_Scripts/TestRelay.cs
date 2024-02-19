@@ -17,6 +17,8 @@ public class TestRelay : MonoBehaviour
     string joinCode;
     public TMP_Text joinCodeDisplay;
     public TMP_InputField entryBox;
+    [SerializeField]
+    private Canvas inGameCanvas;
     //[SerializeField] NetworkManager networkManager;
     private async void Start()
     {
@@ -56,12 +58,9 @@ public class TestRelay : MonoBehaviour
             joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
             Debug.Log("Join Code: " + joinCode);
-            GameObject canvas = GameObject.Find("Canvas");
-            if (canvas != null)
-            {
-                joinCodeDisplay = canvas.transform.Find("HUD_JoinCode").GetComponent<TMP_Text>();
-                joinCodeDisplay.text = "JoinCode: " + joinCode;
-            }
+            inGameCanvas.gameObject.SetActive(true);
+            joinCodeDisplay = inGameCanvas.transform.Find("HUD_JoinCode").GetComponent<TMP_Text>();
+            joinCodeDisplay.text = "JoinCode: " + joinCode;
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetHostRelayData(
                 allocation.RelayServer.IpV4,

@@ -72,6 +72,11 @@ public class AttachmentDepot
         throw new ArgumentOutOfRangeException("Cannot find attachment type for id " + id + "!");
     }
 
+    /// <summary>
+    /// Returns reference to a prefab assigned to the given id
+    /// </summary>
+    /// <param name="id">the attachment to find</param>
+    /// <returns>the prefab gameobject</returns>
     public GameObject GetGameObject(AttachmentID id)
     {
         if (attachmentDict.TryGetValue(id, out var go))

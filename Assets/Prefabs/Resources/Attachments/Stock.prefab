@@ -129,5 +129,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numPellets: 8
+  MaxAmmo: 20
   HitSpritePrefab: {fileID: 6930694874172787373, guid: 474e8f73fcc03804c85d133e05f3e83a, type: 3}
   pelletTrail: {fileID: 2513029014111703424, guid: fcf90dd5fd75fa7428498247301fa553, type: 3}

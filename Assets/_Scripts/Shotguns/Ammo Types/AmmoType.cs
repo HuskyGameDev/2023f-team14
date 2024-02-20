@@ -8,7 +8,11 @@ public abstract class AmmoType : MonoBehaviour, IAttachment
     /// <summary>
     /// The number of pellets to fire at a time.
     /// </summary>
-    public int numPellets;
+    public uint numPellets;
+    /// <summary>
+    /// How much ammo the player can hold at any given time
+    /// </summary>
+    public uint MaxAmmo;
     public GameObject HitSpritePrefab;
 
     public abstract AttachmentID ID { get; }

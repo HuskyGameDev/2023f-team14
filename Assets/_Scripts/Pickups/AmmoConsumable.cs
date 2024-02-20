@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Netcode;
 
-public class NewBehaviourScript : MonoBehaviour
+public class AmmoConsumable : NetworkBehaviour, IPickup
 {
-    public TMP_Text ammo;
+    [SerializeField]
+    private uint ammoSupply;
 
-    // Start is called before the first frame update
-    void Start()
+    public void PickUp(PlayerCharacter pc)
     {
-        
+        pc.gameObject.GetComponent<PlayerShooting>().Shotgun.AddAmmo(ammoSupply);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        
+        if (other.CompareTag("Player")) PickUp(other.GetComponent<PlayerCharacter>());
     }
 }

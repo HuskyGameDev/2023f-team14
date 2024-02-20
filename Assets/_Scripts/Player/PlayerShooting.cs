@@ -22,6 +22,7 @@ public class PlayerShooting : Unity.Netcode.NetworkBehaviour
     {
         playerInput = GetComponent<PlayerInput>();
         playerInput.actions["Shoot"].performed += OnShoot;
+        pc.OnSpawn += Shotgun.OnPlayerSpawn;
     }
 
     public override void OnNetworkSpawn()
@@ -31,9 +32,15 @@ public class PlayerShooting : Unity.Netcode.NetworkBehaviour
         //shotgun.GetComponent<NetworkObject>().Spawn();
     }
 
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        pc.OnSpawn -= Shotgun.OnPlayerSpawn;
+    }
+
     public void OnShoot(InputAction.CallbackContext ctx)
     {
-        if (!IsOwner) return;
+        if (!IsOwner) throw new MethodAccessException("Only the owner can call this method!");
 
         if (!Shotgun) return;
         Shotgun.FireServerRpc(myCam.transform.position, myCam.transform.forward, myCam.transform.right, myCam.transform.up);

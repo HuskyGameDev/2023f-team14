@@ -20,8 +20,10 @@ public class Shotgun : NetworkBehaviour
     private LayerMask playerMask;
     [SerializeField]
     private Transform modelBarrelEnd;
-
-    private readonly Dictionary<AttachmentID, IAttachment> availableAttachments = new();
+    private float shotCooldown = 0.5f;
+    private float lastShotTime = 0f;
+    private readonly Dictionary<AttachmentID, NetworkVariable<uint>> ammoCountsDict = new();
+    private readonly Dictionary<AttachmentID, IAttachment> availableAttachmentsDict = new();
     private Ray[] pelletRays;
     private float MaxHitDistance => 45;
 
@@ -31,12 +33,23 @@ public class Shotgun : NetworkBehaviour
 
     public Action OnFire;
     private AttachmentDepot depot;
+    private ClientRpcParams ownerRpcParams;
 
+    [SerializeField]
+    private AmmoType extra;
 
     // Start is called before the first frame update
     private void Start()
     {
         depot = new();
+        foreach (var id in depot.GetAttachmentIDs<AmmoType>())
+        {
+            ammoCountsDict.Add(id, new NetworkVariable<uint>());
+        }
+        if (ammoCountsDict.TryGetValue(ammoType.ID, out var hit))
+        {
+            hit.Value = ammoType.MaxAmmo;
+        }
     }
 
     // Update is called once per frame
@@ -45,20 +58,54 @@ public class Shotgun : NetworkBehaviour
 
     }
 
-    [SerializeField]
-    private AmmoType extra;
-
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        availableAttachments.Add(barrel.ID, barrel);
-        availableAttachments.Add(underbarrel.ID, underbarrel);
-        availableAttachments.Add(accessory.ID, accessory);
-        availableAttachments.Add(ammoType.ID, ammoType);
+        availableAttachmentsDict.Add(barrel.ID, barrel);
+        availableAttachmentsDict.Add(underbarrel.ID, underbarrel);
+        availableAttachmentsDict.Add(accessory.ID, accessory);
+        availableAttachmentsDict.Add(ammoType.ID, ammoType);
+        if (ammoCountsDict.TryGetValue(ammoType.ID, out var currentAmmo))
+        {
+            currentAmmo.OnValueChanged += (uint oldv, uint newv) =>
+            {
+                if (newv > ammoType.MaxAmmo) currentAmmo.Value = ammoType.MaxAmmo;
+            };
+        }
+        ownerRpcParams = new()
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { OwnerClientId }
+            }
+        };
 
         //! TESTING PURPOSES ONLY -- REMOVE BEFORE RELEASE
-        availableAttachments.Add(AttachmentID.AmmoType_Fireball, extra);
+        availableAttachmentsDict.Add(AttachmentID.AmmoType_Fireball, extra);
     }
+
+    public void OnPlayerSpawn(PlayerCharacter pc)
+    {
+        if (ammoCountsDict.TryGetValue(ammoType.ID, out var currentAmmo))
+        {
+            currentAmmo.Value = (uint)(ammoType.MaxAmmo * 0.6f);
+            return;
+        }
+        Debug.LogError("Can't find accessory in ammo dictionary!");
+    }
+
+    private bool CheckShotCooldown() => Time.time > lastShotTime + shotCooldown;
+    private void ResetShotCooldown() => lastShotTime = Time.time;
+    public void AddAmmo(uint ammoToAdd)
+    {
+        if (ammoCountsDict.TryGetValue(ammoType.ID, out var currentAmmo))
+        {
+            currentAmmo.Value += ammoToAdd;
+            return;
+        }
+        Debug.LogError("Can't find accessory in ammo dictionary!");
+    }
+
 
 
     //TODO Render projectiles + hitscan from gun barrel.
@@ -76,10 +123,24 @@ public class Shotgun : NetworkBehaviour
 
         PlayerCharacter client = NetworkManager.ConnectedClients[serverRpcParams.Receive.SenderClientId].PlayerObject.GetComponent<PlayerCharacter>();
         Camera clientCam = client.camera;
-        Vector2[] spread = barrel.GetPelletSpread(ammoType.numPellets);
+        Vector2[] spread = barrel.GetPelletSpread((int)ammoType.numPellets);
         Vector3 pelletDir;
         PlayerCharacter pc;
 
+        /* Check and consume ammo */
+        if (!CheckShotCooldown()) return;
+        if (ammoCountsDict.TryGetValue(ammoType.ID, out var currentAmmo))
+        {
+            if (currentAmmo.Value <= 0)
+            {
+                NoAmmoClientRpc(ownerRpcParams);
+                return;
+            }
+            //We have at least one ammo
+            currentAmmo.Value--;
+        }
+        Debug.LogError("Can't find accessory in ammo dictionary!");
+        ResetShotCooldown();
 
         /* Calculates the rays that the pellet spread creates */
         pelletRays = new Ray[spread.Length];
@@ -105,8 +166,9 @@ public class Shotgun : NetworkBehaviour
         {
             for (int i = 0; i < pelletRays.Length; i++)
             {
+                Debug.Log("Ray " + pelletRays[i].origin + ", " + pelletRays[i].direction);
                 //Raycast each pellet
-                if (Physics.Raycast(pelletRays[i], out RaycastHit hit, LayerMask.NameToLayer("Player")))
+                if (Physics.Raycast(pelletRays[i], out RaycastHit hit, MaxHitDistance, int.MaxValue, QueryTriggerInteraction.Ignore))
                 {
                     SpawnPelletTrailClientRpc(modelBarrelEnd.position, hit.point);
                     if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
@@ -126,6 +188,13 @@ public class Shotgun : NetworkBehaviour
         }
         /* Shotgun fire callback */
         OnFire?.Invoke();
+    }
+
+    [ClientRpc]
+
+    private void NoAmmoClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        //TODO: Implement click sound effect
     }
 
     [ClientRpc]
@@ -163,7 +232,7 @@ public class Shotgun : NetworkBehaviour
     public void SwapToServerRpc(AttachmentID id, ServerRpcParams serverRpcParams = default)
     {
         Type t;
-        if (!availableAttachments.TryGetValue(id, out IAttachment attachment))
+        if (!availableAttachmentsDict.TryGetValue(id, out IAttachment attachment))
         {
             Debug.LogError("Attachment " + id + " not found! Requested by player " + serverRpcParams.Receive.SenderClientId);
             return;

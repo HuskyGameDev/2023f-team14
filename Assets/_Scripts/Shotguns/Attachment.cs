@@ -16,9 +16,9 @@ public enum AttachmentID : uint
     Barrel_Stock = 0,
     // Underbarrels
     Underbarrel_Stock = AttachmentDepot.AttachmentIDBlockSize + 0,
-    //Accessories
+    /* Accessories */
     Accessory_Stock = AttachmentDepot.AttachmentIDBlockSize * 2 + 0,
-    //Ammo Types
+    /* Ammo Types */
     AmmoType_Stock = AttachmentDepot.AttachmentIDBlockSize * 3 + 0,
     AmmoType_Fireball = AttachmentDepot.AttachmentIDBlockSize * 3 + 1,
 }
@@ -84,5 +84,18 @@ public class AttachmentDepot
             return go;
         }
         throw new KeyNotFoundException();
+    }
+
+    public List<AttachmentID> GetAttachmentIDs<T>() where T : IAttachment
+    {
+        List<AttachmentID> list = new();
+        foreach (var id in attachmentDict.Keys)
+        {
+            if (GetTypeOfAttachment(id) == typeof(T))
+            {
+                list.Add(id);
+            }
+        }
+        return list;
     }
 }

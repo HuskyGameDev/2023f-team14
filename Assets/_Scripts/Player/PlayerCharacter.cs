@@ -19,6 +19,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public PlayerMovement PlayerMovement { get; private set; }
 
     public Action<PlayerCharacter> OnDeath;
+    public Action<PlayerCharacter> OnSpawn;
     private ulong id;
 
     private void Awake()
@@ -39,6 +40,8 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
                 if (newv > maxHealth) { health.Value = maxHealth; }
             };
         }
+
+        OnSpawn?.Invoke(this);
 
         base.OnNetworkSpawn();
     }
@@ -80,5 +83,6 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
         //Debug.Log("spawnPos: " + spawnPosition);
         ResetPositionServerRpc(spawnPosition);
         health.Value = maxHealth;
+        OnSpawn?.Invoke(this);
     }
 }

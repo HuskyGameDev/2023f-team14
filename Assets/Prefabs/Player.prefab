@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 28131021938005609}
   - component: {fileID: 8065260219571461264}
   - component: {fileID: 8453041963305121955}
+  - component: {fileID: 3252003245740709245}
   m_Layer: 0
   m_Name: PlayerCam
   m_TagString: Untagged
@@ -132,7 +133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xSensitivity: 50
   ySensitivity: 50
-  orientation: {fileID: 779159861680724485}
+  PlayerOrientation: {fileID: 779159861680724485}
 --- !u!81 &8065260219571461264
 AudioListener:
   m_ObjectHideFlags: 0
@@ -171,6 +172,23 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &3252003245740709245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531564611911326347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c393fb1a287be384fb7c2df651ce3e20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  verticalRecoilAmount: 5
+  verticalRecoilVariation: 1
+  horizontalRecoilAmount: 0
+  horizontalRecoilVariation: 0.25
+  returnToCenterSpeed: 0
 --- !u!1 &620960601981847366
 GameObject:
   m_ObjectHideFlags: 0
@@ -351,6 +369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shotgun: {fileID: 2892389820747486817}
+  playerCamera: {fileID: 3252003245740709245}
 --- !u!114 &977216777921976758
 MonoBehaviour:
   m_ObjectHideFlags: 0

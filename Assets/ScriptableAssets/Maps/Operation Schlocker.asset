@@ -16,7 +16,7 @@ MonoBehaviour:
   spawnPointPrefab: {fileID: 7233580164855170838, guid: d0d97285c83732647b99b4cd82db5a6b, type: 3}
   spawnPointLocations:
   - {x: -73, y: 8, z: -49.4}
-  - {x: 125, y: 8, z: -78}
+  - {x: 125, y: 7, z: -52}
   - {x: 120, y: 8, z: 9}
   - {x: 132, y: 8, z: 74}
   - {x: 132, y: 8, z: 116}
@@ -28,4 +28,17 @@ MonoBehaviour:
   - {x: 54, y: -6, z: 0}
   - {x: -34, y: -6, z: -41}
   - {x: -37, y: -6, z: 40}
-  spawnPoints: []
+  spawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

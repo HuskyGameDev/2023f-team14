@@ -13,6 +13,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public NetworkVariable<int> score;
     [DoNotSerialize]
     public NetworkVariable<Team> team;
+    public InGameUI HUD;
     public float maxHealth;
     public new Camera camera;
     [DoNotSerialize]
@@ -26,6 +27,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     {
         camera = GetComponentInChildren<Camera>();
         PlayerMovement = GetComponent<PlayerMovement>();
+        if (IsOwner) HUD = FindObjectOfType<InGameUI>();
     }
 
     public override void OnNetworkSpawn()
@@ -35,9 +37,16 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
             team = new(Team.NoTeam, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
             health.OnValueChanged += (float oldv, float newv) =>
             {
-                //if (newv < 0) { DieServerRpc(); return; }
                 if (newv < 0) { Kill(); return; }
                 if (newv > maxHealth) { health.Value = maxHealth; }
+            };
+        }
+        if (IsOwner)
+        {
+            if (!HUD) HUD = FindObjectOfType<InGameUI>();
+            health.OnValueChanged += (float oldv, float newv) =>
+            {
+                HUD.UpdateHealth(newv, maxHealth);
             };
         }
 
@@ -74,6 +83,9 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
             throw new MethodAccessException("This method should not be called by clients!");
         OnDeath?.Invoke(this);
         ScoreKeeper.Instance.SpawnPlayer(this);
+
+        //! THIS IS FOR PLAYTESTS ONLY. REMOVE WHEN Respawn() is used
+        health.Value = maxHealth;
     }
 
     public void Respawn(Vector3 spawnPosition)

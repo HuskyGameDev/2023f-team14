@@ -35,6 +35,7 @@ public class Shotgun : NetworkBehaviour
     public Action OnFire;
     private AttachmentDepot depot;
     private ClientRpcParams ownerRpcParams;
+    private InGameUI HUD;
 
     [SerializeField]
     private AmmoType extra;
@@ -70,7 +71,7 @@ public class Shotgun : NetworkBehaviour
 
         //! TESTING PURPOSES ONLY -- REMOVE BEFORE RELEASE
         availableAttachmentsDict.Add(AttachmentID.AmmoType_Fireball, extra);
-
+        if (IsOwner) HUD = FindObjectOfType<InGameUI>();
         if (!IsServer) return;
         foreach (var id in depot.GetAttachmentIDs<AmmoType>())
         {
@@ -89,7 +90,7 @@ public class Shotgun : NetworkBehaviour
     {
         if (!IsServer) throw new MethodAccessException("This method should not be called by clients!");
         ammoCountsDict[ammoType.ID] = (uint)(ammoType.MaxAmmo * 0.6f);
-        Debug.LogError("Can't find ammo type in ammo dictionary!");
+        UpdateHUDClientRpc(ammoCountsDict[ammoType.ID], ownerRpcParams);
     }
 
     private bool CheckShotCooldown() => NetworkManager.ServerTime.TimeAsFloat > lastShotTime + shotCooldown;
@@ -99,6 +100,7 @@ public class Shotgun : NetworkBehaviour
         if (!IsServer) throw new MethodAccessException("This method should not be called by clients!");
         ammoCountsDict[ammoType.ID] += ammoToAdd;
         ClampAmmo(ammoType.ID);
+        UpdateHUDClientRpc(ammoCountsDict[ammoType.ID], ownerRpcParams);
     }
 
     private void ClampAmmo(AttachmentID id)
@@ -115,6 +117,12 @@ public class Shotgun : NetworkBehaviour
     }
 
 
+    [ClientRpc]
+    private void UpdateHUDClientRpc(uint ammo, ClientRpcParams clientRpcParams = default)
+    {
+        if (!HUD) HUD = FindObjectOfType<InGameUI>();
+        HUD.UpdateAmmo(ammo);
+    }
 
     //TODO Render projectiles + hitscan from gun barrel.
     /// <summary>
@@ -145,6 +153,7 @@ public class Shotgun : NetworkBehaviour
         }
         //We have at least one ammo
         ammoCountsDict[ammoType.ID]--;
+        UpdateHUDClientRpc(ammoCountsDict[ammoType.ID], ownerRpcParams);
         ResetShotCooldown();
 
         /* Calculates the rays that the pellet spread creates */
@@ -175,7 +184,6 @@ public class Shotgun : NetworkBehaviour
                 //Raycast each pellet
                 if (Physics.Raycast(pelletRays[i], out RaycastHit hit, MaxHitDistance, int.MaxValue, QueryTriggerInteraction.Ignore))
                 {
-                    SpawnPelletTrailClientRpc(modelBarrelEnd.position, hit.point);
                     if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
                     {
                         /* Render pellet hit sprites */

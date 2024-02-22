@@ -20,6 +20,11 @@ public class InGameUI : MonoBehaviour
         healthBar.localScale = new(health / maxHealth, 1f, 1f);
     }
 
+    public void UpdateHealth(float percentage)
+    {
+        healthBar.localScale = new(percentage, 1f, 1f);
+    }
+
     public void UpdateAmmo(uint ammo)
     {
         ammoCount.text = ammo.ToString();

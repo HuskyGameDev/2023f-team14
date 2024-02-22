@@ -86,6 +86,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
 
         //! THIS IS FOR PLAYTESTS ONLY. REMOVE WHEN Respawn() is used
         health.Value = maxHealth;
+        HUD.UpdateHealth(1f);
     }
 
     public void Respawn(Vector3 spawnPosition)

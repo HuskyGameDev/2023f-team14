@@ -13,29 +13,7 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void Awake()
     {
-        DCButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.Shutdown();
-            ChangeUI(true);
-        });
-        
-        ServerButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.StartServer();
-            ChangeUI(false);
-        });
-        HostButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.StartHost();
-            ChangeUI(false);
-        });
-        ClientButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.StartClient();
-            ChangeUI(false);
-        });
-        
-        ChangeUI(true);
+        //ChangeUI(true);
     }
 
     void Start()

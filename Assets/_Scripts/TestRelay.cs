@@ -13,10 +13,10 @@ using TMPro;
 public class TestRelay : MonoBehaviour
 {
 
-    string userInput;
-    string joinCode;
-    public TMP_Text joinCodeDisplay;
-    public TMP_InputField entryBox;
+    private string userInput;
+    private string joinCode;
+    public TMP_Text JoinCodeDisplay;
+    public TMP_InputField EntryBox;
     [SerializeField]
     private Canvas inGameCanvas;
     //[SerializeField] NetworkManager networkManager;
@@ -33,22 +33,13 @@ public class TestRelay : MonoBehaviour
 
     }
 
-    public void ReadStringInput(string codeEntry)
+    public void ReadStringInput()
     {
-        userInput = codeEntry;
-        if (userInput.Equals("host"))
-        {
-
-            CreateRelay();
-
-        }
-        else
-        {
-            JoinRelay(userInput);
-        }
+        userInput = EntryBox.text;
+        JoinRelay(userInput);
     }
 
-    private async void CreateRelay()
+    public async void CreateRelay()
     {
         //Note: the number '3' indicates how many players (NOT INCLUDING THE HOST) can connect to the relay
         try
@@ -59,8 +50,8 @@ public class TestRelay : MonoBehaviour
 
             Debug.Log("Join Code: " + joinCode);
             inGameCanvas.gameObject.SetActive(true);
-            joinCodeDisplay = inGameCanvas.transform.Find("HUD_JoinCode").GetComponent<TMP_Text>();
-            joinCodeDisplay.text = "JoinCode: " + joinCode;
+            JoinCodeDisplay = inGameCanvas.transform.Find("HUD_JoinCode").GetComponent<TMP_Text>();
+            JoinCodeDisplay.text = "Join Code: " + joinCode;
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetHostRelayData(
                 allocation.RelayServer.IpV4,
@@ -98,7 +89,7 @@ public class TestRelay : MonoBehaviour
 
             if (NetworkManager.Singleton.StartClient())
             {
-                Destroy(entryBox);
+                Destroy(EntryBox);
             }
 
         }

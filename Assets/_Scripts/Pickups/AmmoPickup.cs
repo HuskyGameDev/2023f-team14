@@ -4,19 +4,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
+using System;
 
-public class AmmoConsumable : NetworkBehaviour, IPickup
+public class AmmoPickup : NetworkPickupRespawnable
 {
     [SerializeField]
     private uint ammoSupply;
 
-    public void PickUp(PlayerCharacter pc)
+    public override void PickUp(PlayerCharacter pc)
     {
         pc.gameObject.GetComponent<PlayerShooting>().Shotgun.AddAmmo(ammoSupply);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player")) PickUp(other.GetComponent<PlayerCharacter>());
     }
 }

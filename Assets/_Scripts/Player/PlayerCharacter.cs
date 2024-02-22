@@ -32,7 +32,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     {
         if (IsServer)
         {
-            team = new(Team.NoTeam);
+            team = new(Team.NoTeam, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
             health.OnValueChanged += (float oldv, float newv) =>
             {
                 //if (newv < 0) { DieServerRpc(); return; }

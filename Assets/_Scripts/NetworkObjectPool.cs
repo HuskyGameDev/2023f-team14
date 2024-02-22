@@ -72,7 +72,7 @@ public class NetworkObjectPool : NetworkBehaviour, IPumpingActionPool<NetworkObj
         NetworkObject CreateFunc() => Instantiate(prefab).GetComponent<NetworkObject>();
         void ActionOnGet(NetworkObject no) => no.gameObject.SetActive(true);
         void ActionOnRelease(NetworkObject no) => no.gameObject.SetActive(false);
-        void ActionOnDestroy(NetworkObject no) => Destroy(no.gameObject);
+        void ActionOnDestroy(NetworkObject no) => no.Despawn(true);
         prefabs.Add(prefab);
 
         pooledObjects[prefab] = new ObjectPool<NetworkObject>(CreateFunc, ActionOnGet, ActionOnRelease, ActionOnDestroy);

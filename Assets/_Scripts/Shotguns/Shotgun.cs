@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Shotgun : NetworkBehaviour
@@ -22,7 +23,7 @@ public class Shotgun : NetworkBehaviour
     private Transform modelBarrelEnd;
     private float shotCooldown = 0.5f;
     private float lastShotTime = 0f;
-    private readonly Dictionary<AttachmentID, NetworkVariable<uint>> ammoCountsDict = new();
+    private readonly Dictionary<AttachmentID, uint> ammoCountsDict = new();
     private readonly Dictionary<AttachmentID, IAttachment> availableAttachmentsDict = new();
     private Ray[] pelletRays;
     private float MaxHitDistance => 45;
@@ -38,18 +39,9 @@ public class Shotgun : NetworkBehaviour
     [SerializeField]
     private AmmoType extra;
 
-    // Start is called before the first frame update
-    private void Start()
+    private void Awake()
     {
         depot = new();
-        foreach (var id in depot.GetAttachmentIDs<AmmoType>())
-        {
-            ammoCountsDict.Add(id, new NetworkVariable<uint>());
-        }
-        if (ammoCountsDict.TryGetValue(ammoType.ID, out var hit))
-        {
-            hit.Value = ammoType.MaxAmmo;
-        }
     }
 
     // Update is called once per frame
@@ -61,17 +53,13 @@ public class Shotgun : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        uint c;
+
         availableAttachmentsDict.Add(barrel.ID, barrel);
         availableAttachmentsDict.Add(underbarrel.ID, underbarrel);
         availableAttachmentsDict.Add(accessory.ID, accessory);
         availableAttachmentsDict.Add(ammoType.ID, ammoType);
-        if (ammoCountsDict.TryGetValue(ammoType.ID, out var currentAmmo))
-        {
-            currentAmmo.OnValueChanged += (uint oldv, uint newv) =>
-            {
-                if (newv > ammoType.MaxAmmo) currentAmmo.Value = ammoType.MaxAmmo;
-            };
-        }
         ownerRpcParams = new()
         {
             Send = new ClientRpcSendParams
@@ -82,28 +70,48 @@ public class Shotgun : NetworkBehaviour
 
         //! TESTING PURPOSES ONLY -- REMOVE BEFORE RELEASE
         availableAttachmentsDict.Add(AttachmentID.AmmoType_Fireball, extra);
+
+        if (!IsServer) return;
+        foreach (var id in depot.GetAttachmentIDs<AmmoType>())
+        {
+            c = id == ammoType.ID ? ammoType.MaxAmmo : 0;
+            ammoCountsDict.Add(id, c);
+        }
     }
 
+    //SERVER ONLY
+    /// <summary>
+    /// To be called when the player that owns this shotgun spawns
+    /// </summary>
+    /// <param name="pc"></param>
+    /// <exception cref="MethodAccessException"></exception>
     public void OnPlayerSpawn(PlayerCharacter pc)
     {
-        if (ammoCountsDict.TryGetValue(ammoType.ID, out var currentAmmo))
-        {
-            currentAmmo.Value = (uint)(ammoType.MaxAmmo * 0.6f);
-            return;
-        }
-        Debug.LogError("Can't find accessory in ammo dictionary!");
+        if (!IsServer) throw new MethodAccessException("This method should not be called by clients!");
+        ammoCountsDict[ammoType.ID] = (uint)(ammoType.MaxAmmo * 0.6f);
+        Debug.LogError("Can't find ammo type in ammo dictionary!");
     }
 
-    private bool CheckShotCooldown() => Time.time > lastShotTime + shotCooldown;
-    private void ResetShotCooldown() => lastShotTime = Time.time;
+    private bool CheckShotCooldown() => NetworkManager.ServerTime.TimeAsFloat > lastShotTime + shotCooldown;
+    private void ResetShotCooldown() => lastShotTime = NetworkManager.ServerTime.TimeAsFloat;
     public void AddAmmo(uint ammoToAdd)
     {
-        if (ammoCountsDict.TryGetValue(ammoType.ID, out var currentAmmo))
+        if (!IsServer) throw new MethodAccessException("This method should not be called by clients!");
+        ammoCountsDict[ammoType.ID] += ammoToAdd;
+        ClampAmmo(ammoType.ID);
+    }
+
+    private void ClampAmmo(AttachmentID id)
+    {
+        if (ammoCountsDict[id] > ammoType.MaxAmmo)
         {
-            currentAmmo.Value += ammoToAdd;
+            ammoCountsDict[id] = ammoType.MaxAmmo;
             return;
         }
-        Debug.LogError("Can't find accessory in ammo dictionary!");
+        if (ammoCountsDict[id] < 0)
+        {
+            ammoCountsDict[id] = 0;
+        }
     }
 
 
@@ -129,17 +137,14 @@ public class Shotgun : NetworkBehaviour
 
         /* Check and consume ammo */
         if (!CheckShotCooldown()) return;
-        if (ammoCountsDict.TryGetValue(ammoType.ID, out var currentAmmo))
+
+        if (ammoCountsDict[ammoType.ID] <= 0)
         {
-            if (currentAmmo.Value <= 0)
-            {
-                NoAmmoClientRpc(ownerRpcParams);
-                return;
-            }
-            //We have at least one ammo
-            currentAmmo.Value--;
+            NoAmmoClientRpc(ownerRpcParams);
+            return;
         }
-        Debug.LogError("Can't find accessory in ammo dictionary!");
+        //We have at least one ammo
+        ammoCountsDict[ammoType.ID]--;
         ResetShotCooldown();
 
         /* Calculates the rays that the pellet spread creates */
@@ -161,12 +166,12 @@ public class Shotgun : NetworkBehaviour
                 pellet.GetComponent<IProjectile>().Launch(pelletRays[i].direction);
             }
         }
+
         /* If the ammo type is hitscan, perform raycasts */
         else if (ammoType is HitscanAmmoType)
         {
             for (int i = 0; i < pelletRays.Length; i++)
             {
-                Debug.Log("Ray " + pelletRays[i].origin + ", " + pelletRays[i].direction);
                 //Raycast each pellet
                 if (Physics.Raycast(pelletRays[i], out RaycastHit hit, MaxHitDistance, int.MaxValue, QueryTriggerInteraction.Ignore))
                 {
@@ -186,6 +191,7 @@ public class Shotgun : NetworkBehaviour
                 //SpawnPelletTrailClientRpc(modelBarrelEnd.position, pelletRays[i].origin + pelletRays[i].direction * MaxHitDistance);
             }
         }
+
         /* Shotgun fire callback */
         OnFire?.Invoke();
     }

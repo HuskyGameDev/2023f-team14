@@ -736,7 +736,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4933712353004724541}
   - component: {fileID: 8821844880782610863}
-  - component: {fileID: 6538559832843746135}
   - component: {fileID: 8036445530352567581}
   - component: {fileID: 1200007762508449009}
   - component: {fileID: 6701926785384802991}
@@ -746,8 +745,8 @@ GameObject:
   - component: {fileID: 3481888063063561396}
   - component: {fileID: 4968057102214067868}
   - component: {fileID: 6935414080235960192}
-  - component: {fileID: 4336801754323314921}
   - component: {fileID: 8348562910310046217}
+  - component: {fileID: 6538559832843746135}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -780,26 +779,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6425623844949647248}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &6538559832843746135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6425623844949647248}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!65 &8036445530352567581
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -994,19 +973,6 @@ MonoBehaviour:
   m_DefaultActionMap: std
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 5628600416472462795}
---- !u!114 &4336801754323314921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6425623844949647248}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17e7e3407ec54471397f3b29d8e4479d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ammo: {fileID: 0}
 --- !u!114 &8348562910310046217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1021,6 +987,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   swapUIPrefab: {fileID: 5217612325260214594, guid: 44dfba0cf8c52c74c8803a0042c05498, type: 3}
   mouseLook: {fileID: 28131021938005609}
+--- !u!114 &6538559832843746135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6425623844949647248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &6759539499866772238
 GameObject:
   m_ObjectHideFlags: 0

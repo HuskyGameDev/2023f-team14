@@ -49,8 +49,7 @@ public class AttachmentDepot
         var attachments = Resources.LoadAll(pathToPrefabDirectory + "Attachments");
         foreach (var attachment in attachments)
         {
-            attachmentDict.Add(((GameObject)attachment).GetComponent<IAttachment>().ID, ((GameObject)attachment));
-            Debug.Log("Attachment registered: " + ((GameObject)attachment).GetComponent<IAttachment>().ID);
+            attachmentDict.Add(((GameObject)attachment).GetComponent<IAttachment>().ID, (GameObject)attachment);
         }
     }
     /// <summary>

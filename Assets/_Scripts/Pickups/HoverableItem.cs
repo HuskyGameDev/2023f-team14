@@ -11,7 +11,7 @@ public class HoverableItem : MonoBehaviour
 
     private UnityEngine.Vector3 startRotation;
     private UnityEngine.Vector3 endRotation;
-    
+
     [SerializeField]
     private float upDownSpeed = 3f;
     private float elapsedTime;
@@ -25,7 +25,7 @@ public class HoverableItem : MonoBehaviour
 
     [SerializeField]
     private float rotationSpeed = 1f;
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,23 +39,28 @@ public class HoverableItem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    void FixedUpdate(){
-        
+    void FixedUpdate()
+    {
+
         elapsedTime += Time.deltaTime;
         float completion = elapsedTime / upDownSpeed;
         float curveValue = positionCurve.Evaluate(completion);
         transform.position = UnityEngine.Vector3.Lerp(startPosition, endPosition, curveValue);
-        transform.Rotate(UnityEngine.Vector3.up, rotationSpeed);
-        
-        if(curveValue >= 1){
-            if(goingUp){
+        transform.Rotate(UnityEngine.Vector3.up, Mathf.Abs(rotationSpeed));
+
+        if (curveValue >= 1)
+        {
+            if (goingUp)
+            {
                 startPosition.y = endPosition.y;
                 endPosition.y = startPosition.y - height;
                 goingUp = false;
-            }else{
+            }
+            else
+            {
                 startPosition.y = endPosition.y;
                 endPosition.y = startPosition.y + height;
                 goingUp = true;

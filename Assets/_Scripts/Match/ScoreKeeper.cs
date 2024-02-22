@@ -26,6 +26,7 @@ public class ScoreKeeper : NetworkBehaviour
     private readonly HashSet<ulong> readiedPlayers = new();
     public int NumTeams => teamCounts.Count;
     public NetworkVariable<bool> GameInProgress = new();
+    public Action OnGameStart;
     void Awake()
     {
         if (Instance != null)
@@ -47,7 +48,6 @@ public class ScoreKeeper : NetworkBehaviour
             GameInProgress.Value = false;
             StartGameServerRpc();
         }
-        if (!IsHost) startButton.gameObject.SetActive(false);
     }
 
     public override void OnNetworkDespawn()
@@ -79,7 +79,6 @@ public class ScoreKeeper : NetworkBehaviour
     [ServerRpc]
     public void StartGameServerRpc()
     {
-
         //TODO: Scene Changes for clients
         Debug.Log("Initializing " + gameMode.Name + " on " + gameMap.Name);
         gameMap.Initialize(gameMode, NumTeams);
@@ -87,6 +86,7 @@ public class ScoreKeeper : NetworkBehaviour
         RerackTeams();
 
         GameInProgress.Value = true;
+        OnGameStart?.Invoke();
         GameEnterClientRpc();
     }
 
@@ -101,6 +101,7 @@ public class ScoreKeeper : NetworkBehaviour
 
     private void ClientConnectionChange(ulong id, ConnectionNotificationManager.ConnectionStatus status)
     {
+        if (!IsServer) throw new MethodAccessException("This method should not be called by clients!");
         if (!GameInProgress.Value) return;
         switch (status)
         {
@@ -117,6 +118,7 @@ public class ScoreKeeper : NetworkBehaviour
         gameMap.TagPoints(gameMode);
     }
 
+    //SERVER ONLY
     /// <summary>
     /// 
     /// </summary>
@@ -125,6 +127,8 @@ public class ScoreKeeper : NetworkBehaviour
     /// <returns>The team that the player is assigned to.</returns>
     private Team AddPlayer(ulong id)
     {
+        if (!IsServer) throw new MethodAccessException("This method should not be called by clients!");
+
         var pc = NetworkManager.Singleton.ConnectedClients[id].PlayerObject.GetComponent<PlayerCharacter>();
         if (!connectedPlayers.TryAdd(id, pc))
         {

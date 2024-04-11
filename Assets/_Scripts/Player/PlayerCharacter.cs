@@ -22,12 +22,19 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
     public Action<PlayerCharacter> OnDeath;
     public Action<PlayerCharacter> OnSpawn;
     private ulong id;
+    [DoNotSerialize]
+    public NetworkVariable<float> respawnTime;
+    public bool ActiveIFrames => respawnTime.Value + 1f > Time.time;
 
     private void Awake()
     {
         camera = GetComponentInChildren<Camera>();
         PlayerMovement = GetComponent<PlayerMovement>();
         if (IsOwner) HUD = FindObjectOfType<InGameUI>();
+        respawnTime = new()
+        {
+            Value = 0
+        };
     }
 
     public override void OnNetworkSpawn()
@@ -37,15 +44,23 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
             team = new(Team.NoTeam, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
             health.OnValueChanged += (float oldv, float newv) =>
             {
-                if (newv < 0) { Kill(); return; }
+                if (ActiveIFrames)
+                {
+                    if (newv != maxHealth)
+                    {
+                        health.Value = maxHealth;
+                    }
+                    return;
+                }
+                if (newv <= 0) { Kill(); return; }
                 if (newv > maxHealth) { health.Value = maxHealth; }
             };
         }
         if (IsOwner)
         {
-            if (!HUD) HUD = FindObjectOfType<InGameUI>();
             health.OnValueChanged += (float oldv, float newv) =>
             {
+                if (!HUD) HUD = FindObjectOfType<InGameUI>();
                 HUD.UpdateHealth(newv, maxHealth);
             };
         }
@@ -61,6 +76,7 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
         if (!IsServer)
             throw new MethodAccessException("This method should not be called by clients!");
         //Debug.Log(assailant + " hit " + OwnerClientId + " for " + damage + " damage!");
+        if (ActiveIFrames) return;
         health.Value -= damage;
     }
 
@@ -77,15 +93,20 @@ public class PlayerCharacter : Unity.Netcode.NetworkBehaviour
         transform.position = pos;
     }
 
+    //SERVER ONLY
+    public void RespawnIFramesStart()
+    {
+        if (!IsServer) throw new MethodAccessException("This method should not be called by clients!");
+        respawnTime.Value = Time.time;
+        health.Value = maxHealth;
+    }
+
     public void Kill()
     {
         if (!IsServer)
             throw new MethodAccessException("This method should not be called by clients!");
         OnDeath?.Invoke(this);
         ScoreKeeper.Instance.SpawnPlayer(this);
-
-        //! THIS IS FOR PLAYTESTS ONLY. REMOVE WHEN Respawn() is used
-        health.Value = maxHealth;
     }
 
     public void Respawn(Vector3 spawnPosition)

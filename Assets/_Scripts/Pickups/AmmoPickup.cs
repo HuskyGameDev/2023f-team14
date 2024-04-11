@@ -13,6 +13,8 @@ public class AmmoPickup : NetworkPickupRespawnable
 
     public override void PickUp(PlayerCharacter pc)
     {
-        pc.gameObject.GetComponent<PlayerShooting>().Shotgun.AddAmmo(ammoSupply);
+        var shotgun = pc.gameObject.GetComponent<PlayerShooting>().Shotgun;
+        if (shotgun.Ammo >= shotgun.MaxAmmo) throw new PreventPickupException("Ammo full");
+        shotgun.AddAmmo(ammoSupply);
     }
 }

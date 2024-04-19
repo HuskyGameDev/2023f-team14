@@ -32,6 +32,9 @@ public class Shotgun : NetworkBehaviour
     //run calcs using ammo and  other attachments
     private float Damage => 10;
 
+    public int MaxAmmo => (int)ammoType.MaxAmmo;
+    public int Ammo => (int)ammoCountsDict[ammoType.ID];
+
     public Action OnFire;
     private AttachmentDepot depot;
     private ClientRpcParams ownerRpcParams;
@@ -89,8 +92,14 @@ public class Shotgun : NetworkBehaviour
     public void OnPlayerSpawn(PlayerCharacter pc)
     {
         if (!IsServer) throw new MethodAccessException("This method should not be called by clients!");
-        ammoCountsDict[ammoType.ID] = (uint)(ammoType.MaxAmmo * 0.6f);
-        UpdateHUDClientRpc(ammoCountsDict[ammoType.ID], ownerRpcParams);
+        SetAmmo((uint)(MaxAmmo * 0.6f));
+        UpdateHUDClientRpc((uint)Ammo, ownerRpcParams);
+    }
+
+    private void SetAmmo(uint ammo)
+    {
+        if (!IsServer) throw new MethodAccessException("This method should not be called by clients!");
+        ammoCountsDict[ammoType.ID] = ammo;
     }
 
     private bool CheckShotCooldown() => NetworkManager.ServerTime.TimeAsFloat > lastShotTime + shotCooldown;
@@ -105,9 +114,9 @@ public class Shotgun : NetworkBehaviour
 
     private void ClampAmmo(AttachmentID id)
     {
-        if (ammoCountsDict[id] > ammoType.MaxAmmo)
+        if (ammoCountsDict[id] > MaxAmmo)
         {
-            ammoCountsDict[id] = ammoType.MaxAmmo;
+            ammoCountsDict[id] = (uint)MaxAmmo;
             return;
         }
         if (ammoCountsDict[id] < 0)
@@ -146,14 +155,14 @@ public class Shotgun : NetworkBehaviour
         /* Check and consume ammo */
         if (!CheckShotCooldown()) return;
 
-        if (ammoCountsDict[ammoType.ID] <= 0)
+        if (Ammo <= 0)
         {
             NoAmmoClientRpc(ownerRpcParams);
             return;
         }
         //We have at least one ammo
-        ammoCountsDict[ammoType.ID]--;
-        UpdateHUDClientRpc(ammoCountsDict[ammoType.ID], ownerRpcParams);
+        SetAmmo((uint)Ammo - 1);
+        UpdateHUDClientRpc((uint)Ammo, ownerRpcParams);
         ResetShotCooldown();
 
         /* Calculates the rays that the pellet spread creates */

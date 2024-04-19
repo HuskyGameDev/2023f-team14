@@ -19,6 +19,8 @@ public class TestRelay : MonoBehaviour
     public TMP_InputField EntryBox;
     [SerializeField]
     private Canvas inGameCanvas;
+    [SerializeField]
+    private GameObject joinFailedText;
     //[SerializeField] NetworkManager networkManager;
     private async void Start()
     {
@@ -96,6 +98,7 @@ public class TestRelay : MonoBehaviour
         catch (RelayServiceException e)
         {
             Debug.Log(e);
+            joinFailedText.SetActive(true);
         }
     }
 

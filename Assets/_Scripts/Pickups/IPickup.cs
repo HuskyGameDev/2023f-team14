@@ -38,9 +38,16 @@ public abstract class NetworkPickup : NetworkBehaviour, IPickup
         if (!IsServer) return;
         if (other.CompareTag("Player"))
         {
-            OnPickup?.Invoke(this);
-            PickUp(other.GetComponent<PlayerCharacter>());
-            NetworkObjectPool.Instance.ReturnObject(NetworkObject, prefab);
+            try
+            {
+                PickUp(other.GetComponent<PlayerCharacter>());
+                NetworkObjectPool.Instance.ReturnObject(NetworkObject, prefab);
+                OnPickup?.Invoke(this);
+            }
+            catch (PreventPickupException)
+            {
+
+            }
         }
     }
 }
@@ -53,10 +60,31 @@ public abstract class NetworkPickupRespawnable : NetworkPickup
         if (!IsServer) return;
         if (other.CompareTag("Player"))
         {
-            OnPickup?.Invoke(this);
-            PickUp(other.GetComponent<PlayerCharacter>());
-            NetworkObjectPool.Instance.ReturnObject(NetworkObject, prefab);
-            NetworkObject.Despawn(false);
+            try
+            {
+                PickUp(other.GetComponent<PlayerCharacter>());
+                NetworkObjectPool.Instance.ReturnObject(NetworkObject, prefab);
+                OnPickup?.Invoke(this);
+                NetworkObject.Despawn(false);
+            }
+            catch (PreventPickupException e)
+            {
+                Debug.Log(e);
+            }
         }
     }
+}
+
+public class PreventPickupException : Exception
+{
+    public PreventPickupException()
+    { }
+
+    public PreventPickupException(string message)
+        : base(message)
+    { }
+
+    public PreventPickupException(string message, Exception innerException)
+        : base(message, innerException)
+    { }
 }

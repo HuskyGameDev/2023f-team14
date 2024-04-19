@@ -211,7 +211,6 @@ public class ScoreKeeper : NetworkBehaviour
     {
         if (!IsServer)
             throw new MethodAccessException("This method should not be called by clients!");
-        pc.health.Value = pc.maxHealth;
 
         if (!GameInProgress.Value)
         {
@@ -221,6 +220,7 @@ public class ScoreKeeper : NetworkBehaviour
 
         //!This call is temporary. Remove when PlayerCharacter.DieServerRpc is implemented
         pc.OnDeath?.Invoke(pc);
+        pc.RespawnIFramesStart();
 
         pc.PlayerMovement.SetPosition(gameMode.CalculateSpawnPoint(gameMap, pc.team.Value));
     }
